@@ -1,0 +1,101 @@
+import { motion } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef } from "react";
+import portraitImage from "@/assets/psychologist-portrait.jpg";
+
+const AboutSection = () => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <section id="about" className="py-32 relative" ref={ref}>
+      <div className="container mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Image */}
+          <motion.div
+            initial={{ opacity: 0, x: -60 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="relative"
+          >
+            <div className="absolute -inset-6 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-[2rem]" />
+            <div className="relative overflow-hidden rounded-[2rem]">
+              <img
+                src={portraitImage}
+                alt="Dr. Ayşe Yılmaz"
+                className="w-full object-cover aspect-square"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
+            </div>
+          </motion.div>
+
+          {/* Text */}
+          <div>
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.2 }}
+              className="text-sm font-body font-semibold text-secondary uppercase tracking-widest"
+            >
+              About
+            </motion.span>
+
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="text-4xl md:text-5xl font-display font-bold text-foreground mt-4 mb-6"
+            >
+              Dr. Ayşe Yılmaz
+            </motion.h2>
+
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.5 }}
+              className="text-lg text-primary font-highlight italic mb-6"
+            >
+              Clinical Psychologist
+            </motion.p>
+
+            {[
+              "Helping individuals overcome anxiety, trauma, and emotional challenges through evidence-based therapeutic approaches.",
+              "With over 15 years of clinical experience, I provide a safe, non-judgmental space where healing begins. My approach combines cognitive-behavioral therapy, mindfulness techniques, and trauma-informed care.",
+              "Every person's journey is unique. Together, we'll develop personalized strategies that empower you to navigate life's challenges with resilience and clarity.",
+            ].map((text, i) => (
+              <motion.p
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.6 + i * 0.15 }}
+                className="text-muted-foreground font-body leading-relaxed mb-4"
+              >
+                {text}
+              </motion.p>
+            ))}
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 1 }}
+              className="flex gap-8 mt-8"
+            >
+              {[
+                { num: "2000+", label: "Sessions" },
+                { num: "500+", label: "Patients" },
+                { num: "15+", label: "Years" },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <div className="text-3xl font-display font-bold text-primary">{stat.num}</div>
+                  <div className="text-sm text-muted-foreground font-body">{stat.label}</div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default AboutSection;
