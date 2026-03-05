@@ -14,9 +14,9 @@ const ContactSection = () => {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           className="text-center mb-16"
         >
-          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Contact</span>
+          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">İletişim</span>
           <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mt-4">
-            Get in Touch
+            Bize Ulaşın
           </h2>
         </motion.div>
 
@@ -28,9 +28,9 @@ const ContactSection = () => {
             className="space-y-8"
           >
             {[
-              { icon: MapPin, label: "Address", value: "123 Wellness Street, Suite 4B\nIstanbul, Turkey 34000" },
-              { icon: Phone, label: "Phone", value: "+90 (212) 555-0184" },
-              { icon: Mail, label: "Email", value: "info@mindcare.com" },
+              { icon: MapPin, label: "Adres", value: "Wellness Sokak No: 123, Kat: 4\nİstanbul, Türkiye 34000" },
+              { icon: Phone, label: "Telefon", value: "+90 (212) 555-0184" },
+              { icon: Mail, label: "E-posta", value: "info@mindcare.com" },
             ].map((item) => (
               <div key={item.label} className="flex gap-4">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -68,14 +68,14 @@ const ContactSection = () => {
             className="rounded-2xl overflow-hidden shadow-card h-80 md:h-auto"
           >
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3009.0977!2d28.9784!3d41.0082!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDAwJzI5LjUiTiAyOMKwNTgnNDIuMiJF!5e0!3m2!1sen!2str!4v1600000000000!5m2!1sen!2str"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3009.0977!2d28.9784!3d41.0082!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDAwJzI5LjUiTiAyOMKwNTgnNDIuMiJF!5e0!3m2!1str!2str!4v1600000000000!5m2!1str!2str"
               width="100%"
               height="100%"
               style={{ border: 0, minHeight: 320 }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Office Location"
+              title="Ofis Konumu"
             />
           </motion.div>
         </div>

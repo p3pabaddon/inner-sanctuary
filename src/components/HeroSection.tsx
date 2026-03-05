@@ -31,7 +31,7 @@ const HeroSection = () => {
     return () => window.removeEventListener("mousemove", handleMouse);
   }, []);
 
-  const words = ["Your", "Mind", "Deserves", "Care"];
+  const words = ["Zihniniz", "İlgiyi", "Hak", "Ediyor"];
 
   return (
     <section
@@ -73,7 +73,7 @@ const HeroSection = () => {
               transition={{ delay: 0.3 }}
               className="inline-block px-4 py-1.5 rounded-full glass text-sm font-body text-primary mb-8"
             >
-              Clinical Psychology Practice
+              Klinik Psikoloji Pratiği
             </motion.div>
 
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold leading-[0.95] mb-8">
@@ -96,7 +96,7 @@ const HeroSection = () => {
               transition={{ delay: 1.2, duration: 0.8 }}
               className="text-lg md:text-xl text-muted-foreground font-body max-w-lg mb-10 leading-relaxed"
             >
-              Professional psychological counseling in a safe and supportive environment. Begin your journey toward inner peace.
+              Güvenli ve destekleyici bir ortamda profesyonel psikolojik danışmanlık. İç huzura giden yolculuğunuza başlayın.
             </motion.p>
 
             <motion.div
@@ -109,14 +109,14 @@ const HeroSection = () => {
                 href="#appointment"
                 className="group relative px-8 py-4 rounded-full bg-primary text-primary-foreground font-medium overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-elevated animate-pulse-glow"
               >
-                <span className="relative z-10">Book Appointment</span>
+                <span className="relative z-10">Randevu Al</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               </a>
               <a
                 href="#about"
                 className="px-8 py-4 rounded-full glass font-medium text-foreground hover:shadow-soft transition-all duration-300 hover:-translate-y-1"
               >
-                Learn More
+                Daha Fazla Bilgi
               </a>
             </motion.div>
           </div>
@@ -136,7 +136,7 @@ const HeroSection = () => {
               <div className="absolute -inset-4 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-[2rem] blur-2xl" />
               <img
                 src={heroImage}
-                alt="Dr. Ayşe Yılmaz - Clinical Psychologist"
+                alt="Dr. Ayşe Yılmaz - Klinik Psikolog"
                 className="relative rounded-[2rem] shadow-elevated w-full object-cover aspect-[16/10]"
               />
               {/* Floating badge */}
@@ -146,8 +146,8 @@ const HeroSection = () => {
                 transition={{ delay: 1.8 }}
                 className="absolute -bottom-6 -left-6 glass-strong rounded-2xl p-4 shadow-card"
               >
-                <div className="text-sm font-body text-muted-foreground">Experience</div>
-                <div className="text-2xl font-display font-bold text-primary">15+ Years</div>
+                <div className="text-sm font-body text-muted-foreground">Deneyim</div>
+                <div className="text-2xl font-display font-bold text-primary">15+ Yıl</div>
               </motion.div>
             </div>
           </motion.div>

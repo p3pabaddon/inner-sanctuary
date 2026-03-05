@@ -37,7 +37,7 @@ const AboutSection = () => {
               transition={{ delay: 0.2 }}
               className="text-sm font-body font-semibold text-secondary uppercase tracking-widest"
             >
-              About
+              Hakkımda
             </motion.span>
 
             <motion.h2
@@ -55,13 +55,13 @@ const AboutSection = () => {
               transition={{ delay: 0.5 }}
               className="text-lg text-primary font-highlight italic mb-6"
             >
-              Clinical Psychologist
+              Klinik Psikolog
             </motion.p>
 
             {[
-              "Helping individuals overcome anxiety, trauma, and emotional challenges through evidence-based therapeutic approaches.",
-              "With over 15 years of clinical experience, I provide a safe, non-judgmental space where healing begins. My approach combines cognitive-behavioral therapy, mindfulness techniques, and trauma-informed care.",
-              "Every person's journey is unique. Together, we'll develop personalized strategies that empower you to navigate life's challenges with resilience and clarity.",
+              "Kanıta dayalı terapötik yaklaşımlarla bireylerin kaygı, travma ve duygusal zorluklarını aşmalarına yardımcı oluyorum.",
+              "15 yılı aşkın klinik deneyimimle, iyileşmenin başladığı güvenli ve yargısız bir alan sunuyorum. Yaklaşımım bilişsel-davranışçı terapi, farkındalık teknikleri ve travma odaklı bakımı bir arada kullanmaktadır.",
+              "Her bireyin yolculuğu eşsizdir. Birlikte, hayatın zorluklarını dayanıklılık ve netlikle aşmanızı sağlayacak kişiselleştirilmiş stratejiler geliştireceğiz.",
             ].map((text, i) => (
               <motion.p
                 key={i}
@@ -81,9 +81,9 @@ const AboutSection = () => {
               className="flex gap-8 mt-8"
             >
               {[
-                { num: "2000+", label: "Sessions" },
-                { num: "500+", label: "Patients" },
-                { num: "15+", label: "Years" },
+                { num: "2000+", label: "Seans" },
+                { num: "500+", label: "Danışan" },
+                { num: "15+", label: "Yıl" },
               ].map((stat) => (
                 <div key={stat.label}>
                   <div className="text-3xl font-display font-bold text-primary">{stat.num}</div>

@@ -3,12 +3,12 @@ import { useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 const faqs = [
-  { q: "What should I expect during my first session?", a: "Your first session is an opportunity for us to get to know each other. We'll discuss your concerns, goals, and history in a relaxed, non-judgmental setting. This helps me create a personalized treatment plan tailored to your needs." },
-  { q: "How long does each therapy session last?", a: "Standard sessions are 50 minutes. The initial assessment session may run slightly longer at 60-75 minutes to ensure we have enough time to understand your needs thoroughly." },
-  { q: "Is everything I share kept confidential?", a: "Absolutely. Confidentiality is the cornerstone of our therapeutic relationship. Everything discussed in sessions is strictly confidential, with only rare legal exceptions that I'll explain during our first meeting." },
-  { q: "How many sessions will I need?", a: "The duration of therapy varies based on your unique situation and goals. Some clients see significant improvement in 8-12 sessions, while others benefit from longer-term support. We'll regularly review your progress together." },
-  { q: "Do you offer online therapy sessions?", a: "Yes, I offer secure online video sessions that are just as effective as in-person therapy. This option provides flexibility and accessibility, especially for those with busy schedules or mobility concerns." },
-  { q: "What are your fees and do you accept insurance?", a: "Please contact me directly for current fee information. I work with several insurance providers and can also offer sliding scale fees in certain circumstances to ensure therapy remains accessible." },
+  { q: "İlk seansta neler beklemeliyim?", a: "İlk seansınız birbirimizi tanıma fırsatıdır. Endişelerinizi, hedeflerinizi ve geçmişinizi rahat ve yargısız bir ortamda konuşacağız. Bu, ihtiyaçlarınıza özel kişiselleştirilmiş bir tedavi planı oluşturmama yardımcı olur." },
+  { q: "Her terapi seansı ne kadar sürer?", a: "Standart seanslar 50 dakikadır. İlk değerlendirme seansı, ihtiyaçlarınızı kapsamlı bir şekilde anlamamız için yeterli zaman olması adına 60-75 dakika sürebilir." },
+  { q: "Paylaştığım her şey gizli kalır mı?", a: "Kesinlikle. Gizlilik, terapötik ilişkimizin temel taşıdır. Seanslarda tartışılan her şey kesinlikle gizli tutulur, yalnızca ilk görüşmemizde açıklayacağım nadir yasal istisnalar vardır." },
+  { q: "Kaç seansa ihtiyacım olacak?", a: "Terapinin süresi, benzersiz durumunuza ve hedeflerinize bağlı olarak değişir. Bazı danışanlar 8-12 seansta önemli iyileşme görürken, diğerleri daha uzun süreli destekten fayda görür. İlerlemenizi birlikte düzenli olarak değerlendireceğiz." },
+  { q: "Online terapi seansı sunuyor musunuz?", a: "Evet, yüz yüze terapi kadar etkili olan güvenli online video seansları sunuyorum. Bu seçenek, özellikle yoğun programları olanlar veya ulaşım sorunu yaşayanlar için esneklik ve erişilebilirlik sağlar." },
+  { q: "Ücretleriniz nedir ve sigorta kabul ediyor musunuz?", a: "Güncel ücret bilgisi için lütfen doğrudan benimle iletişime geçin. Birçok sigorta kurumuyla çalışıyorum ve terapinin erişilebilir kalmasını sağlamak için belirli durumlarda esnek ücret seçenekleri de sunabilirim." },
 ];
 
 const FAQSection = () => {
@@ -24,9 +24,9 @@ const FAQSection = () => {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           className="text-center mb-16"
         >
-          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">FAQ</span>
+          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">SSS</span>
           <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mt-4">
-            Common Questions
+            Sık Sorulan Sorular
           </h2>
         </motion.div>
 
