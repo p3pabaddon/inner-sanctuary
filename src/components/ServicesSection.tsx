@@ -3,11 +3,11 @@ import { useRef } from "react";
 import { Brain, Heart, Users, CloudRain, Monitor } from "lucide-react";
 
 const services = [
-  { icon: Brain, title: "Individual Therapy", desc: "One-on-one sessions tailored to your unique needs and goals for personal growth." },
-  { icon: Heart, title: "Couples Therapy", desc: "Strengthen your relationship through improved communication and understanding." },
-  { icon: CloudRain, title: "Anxiety Treatment", desc: "Evidence-based approaches to manage anxiety and regain control of your life." },
-  { icon: Users, title: "Depression Therapy", desc: "Compassionate support to help you find light and motivation during difficult times." },
-  { icon: Monitor, title: "Online Therapy", desc: "Professional therapy from the comfort of your home via secure video sessions." },
+  { icon: Brain, title: "Bireysel Terapi", desc: "Kişisel gelişim hedeflerinize ve ihtiyaçlarınıza özel olarak tasarlanmış birebir seanslar." },
+  { icon: Heart, title: "Çift Terapisi", desc: "Geliştirilmiş iletişim ve anlayış yoluyla ilişkinizi güçlendirin." },
+  { icon: CloudRain, title: "Kaygı Tedavisi", desc: "Kaygıyı yönetmek ve hayatınızın kontrolünü yeniden ele almak için kanıta dayalı yaklaşımlar." },
+  { icon: Users, title: "Depresyon Terapisi", desc: "Zor zamanlarda ışık ve motivasyon bulmanıza yardımcı olacak şefkatli destek." },
+  { icon: Monitor, title: "Online Terapi", desc: "Güvenli video görüşmeleri ile evinizin konforunda profesyonel terapi." },
 ];
 
 const ServicesSection = () => {
@@ -22,9 +22,9 @@ const ServicesSection = () => {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           className="text-center mb-16"
         >
-          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Services</span>
+          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Hizmetler</span>
           <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mt-4">
-            How I Can Help
+            Nasıl Yardımcı Olabilirim
           </h2>
         </motion.div>
 

@@ -2,7 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Calendar, Clock, User, Mail, ArrowRight, Check } from "lucide-react";
 
-const therapyTypes = ["Individual Therapy", "Couples Therapy", "Anxiety Treatment", "Depression Therapy", "Online Therapy"];
+const therapyTypes = ["Bireysel Terapi", "Çift Terapisi", "Kaygı Tedavisi", "Depresyon Terapisi", "Online Terapi"];
 const timeSlots = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00"];
 
 const AppointmentSection = () => {
@@ -15,7 +15,7 @@ const AppointmentSection = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
 
-  const steps = ["Therapy Type", "Date & Time", "Your Details", "Confirm"];
+  const steps = ["Terapi Türü", "Tarih ve Saat", "Bilgileriniz", "Onay"];
 
   const canProceed = () => {
     if (step === 0) return !!selectedType;
@@ -39,9 +39,9 @@ const AppointmentSection = () => {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           className="text-center mb-16"
         >
-          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Booking</span>
+          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Randevu</span>
           <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mt-4">
-            Book Your Appointment
+            Randevunuzu Alın
           </h2>
         </motion.div>
 
@@ -75,7 +75,7 @@ const AppointmentSection = () => {
             {/* Step 0: Therapy Type */}
             {step === 0 && (
               <div className="space-y-3">
-                <h3 className="font-display text-xl font-semibold text-foreground mb-6">Choose therapy type</h3>
+                <h3 className="font-display text-xl font-semibold text-foreground mb-6">Terapi türünü seçin</h3>
                 {therapyTypes.map((type) => (
                   <button
                     key={type}
@@ -97,7 +97,7 @@ const AppointmentSection = () => {
               <div className="space-y-8">
                 <div>
                   <h3 className="font-display text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-primary" /> Select Date
+                    <Calendar className="w-5 h-5 text-primary" /> Tarih Seçin
                   </h3>
                   <div className="grid grid-cols-5 gap-2">
                     {dates.slice(0, 10).map((d) => {
@@ -112,7 +112,7 @@ const AppointmentSection = () => {
                               : "glass hover:shadow-soft text-foreground"
                           }`}
                         >
-                          <div className="font-medium">{d.toLocaleDateString("en", { weekday: "short" })}</div>
+                          <div className="font-medium">{d.toLocaleDateString("tr-TR", { weekday: "short" })}</div>
                           <div className="text-lg font-semibold">{d.getDate()}</div>
                         </button>
                       );
@@ -121,7 +121,7 @@ const AppointmentSection = () => {
                 </div>
                 <div>
                   <h3 className="font-display text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-primary" /> Select Time
+                    <Clock className="w-5 h-5 text-primary" /> Saat Seçin
                   </h3>
                   <div className="grid grid-cols-4 gap-2">
                     {timeSlots.map((time) => (
@@ -145,12 +145,12 @@ const AppointmentSection = () => {
             {/* Step 2: Details */}
             {step === 2 && (
               <div className="space-y-6">
-                <h3 className="font-display text-xl font-semibold text-foreground mb-6">Your Details</h3>
+                <h3 className="font-display text-xl font-semibold text-foreground mb-6">Bilgileriniz</h3>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <input
                     type="text"
-                    placeholder="Full Name"
+                    placeholder="Ad Soyad"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     className="w-full pl-12 pr-4 py-4 rounded-xl glass font-body text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300"
@@ -160,7 +160,7 @@ const AppointmentSection = () => {
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <input
                     type="email"
-                    placeholder="Email Address"
+                    placeholder="E-posta Adresi"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-12 pr-4 py-4 rounded-xl glass font-body text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-300"
@@ -175,13 +175,13 @@ const AppointmentSection = () => {
                 <div className="w-20 h-20 rounded-full bg-secondary/20 flex items-center justify-center mx-auto">
                   <Check className="w-10 h-10 text-secondary" />
                 </div>
-                <h3 className="font-display text-2xl font-semibold text-foreground">Booking Confirmed!</h3>
+                <h3 className="font-display text-2xl font-semibold text-foreground">Randevunuz Onaylandı!</h3>
                 <div className="glass rounded-xl p-6 text-left space-y-2 font-body">
-                  <p className="text-muted-foreground"><strong className="text-foreground">Type:</strong> {selectedType}</p>
-                  <p className="text-muted-foreground"><strong className="text-foreground">Date:</strong> {selectedDate}</p>
-                  <p className="text-muted-foreground"><strong className="text-foreground">Time:</strong> {selectedTime}</p>
-                  <p className="text-muted-foreground"><strong className="text-foreground">Name:</strong> {name}</p>
-                  <p className="text-muted-foreground"><strong className="text-foreground">Email:</strong> {email}</p>
+                  <p className="text-muted-foreground"><strong className="text-foreground">Tür:</strong> {selectedType}</p>
+                  <p className="text-muted-foreground"><strong className="text-foreground">Tarih:</strong> {selectedDate}</p>
+                  <p className="text-muted-foreground"><strong className="text-foreground">Saat:</strong> {selectedTime}</p>
+                  <p className="text-muted-foreground"><strong className="text-foreground">İsim:</strong> {name}</p>
+                  <p className="text-muted-foreground"><strong className="text-foreground">E-posta:</strong> {email}</p>
                 </div>
               </div>
             )}
@@ -194,7 +194,7 @@ const AppointmentSection = () => {
                     onClick={() => setStep(step - 1)}
                     className="px-6 py-3 rounded-full glass font-body font-medium text-foreground hover:shadow-soft transition-all duration-300"
                   >
-                    Back
+                    Geri
                   </button>
                 ) : (
                   <div />
@@ -204,7 +204,7 @@ const AppointmentSection = () => {
                   disabled={!canProceed()}
                   className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-body font-medium flex items-center gap-2 hover:shadow-elevated transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
                 >
-                  {step === 2 ? "Confirm" : "Next"} <ArrowRight className="w-4 h-4" />
+                  {step === 2 ? "Onayla" : "İleri"} <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             )}

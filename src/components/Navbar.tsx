@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 const navLinks = [
-  { label: "About", href: "#about" },
-  { label: "Services", href: "#services" },
-  { label: "Methods", href: "#methods" },
-  { label: "Testimonials", href: "#testimonials" },
-  { label: "Articles", href: "#blog" },
-  { label: "FAQ", href: "#faq" },
-  { label: "Contact", href: "#contact" },
+  { label: "Hakkımda", href: "#about" },
+  { label: "Hizmetler", href: "#services" },
+  { label: "Yöntemler", href: "#methods" },
+  { label: "Yorumlar", href: "#testimonials" },
+  { label: "Makaleler", href: "#blog" },
+  { label: "SSS", href: "#faq" },
+  { label: "İletişim", href: "#contact" },
 ];
 
 const Navbar = () => {
@@ -51,7 +51,7 @@ const Navbar = () => {
             href="#appointment"
             className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:shadow-elevated transition-all duration-300 hover:-translate-y-0.5"
           >
-            Book Appointment
+            Randevu Al
           </a>
         </div>
 
@@ -89,7 +89,7 @@ const Navbar = () => {
                 onClick={() => setMobileOpen(false)}
                 className="px-5 py-3 rounded-full bg-primary text-primary-foreground text-center font-medium"
               >
-                Book Appointment
+                Randevu Al
               </a>
             </div>
           </motion.div>

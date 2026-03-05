@@ -4,28 +4,28 @@ import { Star, ChevronLeft, ChevronRight, Quote } from "lucide-react";
 
 const testimonials = [
   {
-    name: "Sarah M.",
-    text: "Dr. Yılmaz helped me understand my anxiety in a way no one else could. After six months, I feel like a completely different person. I'm grateful for her patience and expertise.",
+    name: "Selin M.",
+    text: "Dr. Yılmaz, kaygımı başka kimsenin yapamadığı şekilde anlamamı sağladı. Altı ay sonra tamamen farklı bir insan gibi hissediyorum. Sabrı ve uzmanlığı için minnettarım.",
     rating: 5,
-    role: "Anxiety Treatment",
+    role: "Kaygı Tedavisi",
   },
   {
-    name: "James K.",
-    text: "The couples therapy sessions saved our marriage. We learned to communicate openly and honestly. I can't recommend Dr. Yılmaz enough for her compassionate approach.",
+    name: "Ahmet K.",
+    text: "Çift terapisi seansları evliliğimizi kurtardı. Açık ve dürüst iletişim kurmayı öğrendik. Dr. Yılmaz'ı şefkatli yaklaşımı için yeterince tavsiye edemem.",
     rating: 5,
-    role: "Couples Therapy",
+    role: "Çift Terapisi",
   },
   {
-    name: "Elena R.",
-    text: "After years of struggling with trauma, I finally found someone who truly understood. The EMDR therapy was life-changing. I feel safe and hopeful for the first time in years.",
+    name: "Elif R.",
+    text: "Yıllarca travmayla mücadele ettikten sonra, sonunda gerçekten anlayan birini buldum. EMDR terapisi hayatımı değiştirdi. Yıllar sonra ilk kez kendimi güvende ve umutlu hissediyorum.",
     rating: 5,
-    role: "Trauma Therapy",
+    role: "Travma Terapisi",
   },
   {
-    name: "David L.",
-    text: "Online therapy made it possible for me to get help despite my busy schedule. Dr. Yılmaz is incredibly professional and caring even through a screen.",
+    name: "Deniz L.",
+    text: "Online terapi, yoğun programıma rağmen yardım almamı mümkün kıldı. Dr. Yılmaz ekran üzerinden bile inanılmaz profesyonel ve ilgili.",
     rating: 5,
-    role: "Online Therapy",
+    role: "Online Terapi",
   },
 ];
 
@@ -45,9 +45,9 @@ const TestimonialsSection = () => {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           className="text-center mb-16"
         >
-          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Testimonials</span>
+          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Yorumlar</span>
           <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mt-4">
-            What Patients Say
+            Danışanlarım Ne Diyor
           </h2>
         </motion.div>
 

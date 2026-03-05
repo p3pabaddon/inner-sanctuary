@@ -4,20 +4,20 @@ import { ChevronDown } from "lucide-react";
 
 const methods = [
   {
-    title: "Cognitive Behavioral Therapy (CBT)",
-    desc: "CBT helps you identify and change negative thinking patterns and behaviors. Through structured sessions, you'll learn practical strategies to manage stress, anxiety, and depression by reshaping how you perceive and respond to challenging situations.",
+    title: "Bilişsel Davranışçı Terapi (BDT)",
+    desc: "BDT, olumsuz düşünce kalıplarını ve davranışları belirlemenize ve değiştirmenize yardımcı olur. Yapılandırılmış seanslar aracılığıyla, zorlu durumları nasıl algıladığınızı ve bunlara nasıl tepki verdiğinizi yeniden şekillendirerek stres, kaygı ve depresyonu yönetmek için pratik stratejiler öğreneceksiniz.",
   },
   {
-    title: "Mindfulness-Based Therapy",
-    desc: "Integrating mindfulness and meditation techniques into therapy to help you develop present-moment awareness. This approach reduces rumination, increases emotional regulation, and fosters a deeper connection with yourself.",
+    title: "Farkındalık Temelli Terapi",
+    desc: "Şu ana dair farkındalık geliştirmenize yardımcı olmak için farkındalık ve meditasyon tekniklerini terapiye entegre ediyorum. Bu yaklaşım ruminasyonu azaltır, duygusal düzenlemeyi artırır ve kendinizle daha derin bir bağ kurmanızı sağlar.",
   },
   {
-    title: "Trauma-Focused Therapy",
-    desc: "Specialized treatment for trauma and PTSD using evidence-based approaches like EMDR. This gentle process helps you process traumatic experiences, reduce distressing symptoms, and reclaim your sense of safety and control.",
+    title: "Travma Odaklı Terapi",
+    desc: "EMDR gibi kanıta dayalı yaklaşımlar kullanarak travma ve TSSB için özelleştirilmiş tedavi. Bu nazik süreç, travmatik deneyimleri işlemenize, sıkıntı verici belirtileri azaltmanıza ve güvenlik ve kontrol duygunuzu yeniden kazanmanıza yardımcı olur.",
   },
   {
-    title: "Family Systems Therapy",
-    desc: "Understanding and improving family dynamics through systemic approaches. This method examines patterns of interaction within the family unit and works toward healthier communication and stronger relationships.",
+    title: "Aile Sistemleri Terapisi",
+    desc: "Sistemik yaklaşımlarla aile dinamiklerini anlama ve geliştirme. Bu yöntem, aile birimi içindeki etkileşim kalıplarını inceler ve daha sağlıklı iletişim ile daha güçlü ilişkilere doğru çalışır.",
   },
 ];
 
@@ -34,12 +34,12 @@ const MethodsSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
           >
-            <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Approach</span>
+            <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Yaklaşım</span>
             <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mt-4 mb-6">
-              Therapy Methods
+              Terapi Yöntemleri
             </h2>
             <p className="text-muted-foreground font-body leading-relaxed text-lg">
-              I use a variety of evidence-based therapeutic approaches, carefully selected and combined to address your unique needs and goals.
+              Benzersiz ihtiyaçlarınıza ve hedeflerinize yönelik olarak özenle seçilmiş ve birleştirilmiş çeşitli kanıta dayalı terapötik yaklaşımlar kullanıyorum.
             </p>
           </motion.div>
 

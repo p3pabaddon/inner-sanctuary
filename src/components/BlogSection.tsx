@@ -8,21 +8,21 @@ import blog3 from "@/assets/blog-3.jpg";
 const articles = [
   {
     img: blog1,
-    title: "Understanding Anxiety: Signs, Symptoms & Coping Strategies",
-    desc: "Learn to recognize anxiety patterns and discover evidence-based techniques for managing everyday stress.",
-    date: "March 2, 2026",
+    title: "Kaygıyı Anlamak: Belirtiler ve Baş Etme Stratejileri",
+    desc: "Kaygı kalıplarını tanımayı öğrenin ve günlük stresi yönetmek için kanıta dayalı teknikleri keşfedin.",
+    date: "2 Mart 2026",
   },
   {
     img: blog2,
-    title: "The Power of Mindfulness in Daily Life",
-    desc: "How simple mindfulness practices can transform your mental health and improve emotional regulation.",
-    date: "February 18, 2026",
+    title: "Günlük Hayatta Farkındalığın Gücü",
+    desc: "Basit farkındalık uygulamalarının ruh sağlığınızı nasıl dönüştürebileceğini ve duygusal düzenlemeyi nasıl geliştirebileceğini öğrenin.",
+    date: "18 Şubat 2026",
   },
   {
     img: blog3,
-    title: "Building Resilience After Trauma",
-    desc: "A guide to understanding trauma responses and the path toward healing and post-traumatic growth.",
-    date: "February 5, 2026",
+    title: "Travma Sonrası Dayanıklılık Oluşturmak",
+    desc: "Travma tepkilerini anlama ve iyileşme ile travma sonrası büyüme yoluna ilişkin bir rehber.",
+    date: "5 Şubat 2026",
   },
 ];
 
@@ -38,9 +38,9 @@ const BlogSection = () => {
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           className="text-center mb-16"
         >
-          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Articles</span>
+          <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Makaleler</span>
           <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mt-4">
-            Psychology Insights
+            Psikoloji Yazıları
           </h2>
         </motion.div>
 
@@ -67,7 +67,7 @@ const BlogSection = () => {
               </h3>
               <p className="text-muted-foreground font-body leading-relaxed mb-4">{article.desc}</p>
               <span className="inline-flex items-center gap-2 text-primary font-body font-medium text-sm group-hover:gap-3 transition-all duration-300">
-                Read More <ArrowRight className="w-4 h-4" />
+                Devamını Oku <ArrowRight className="w-4 h-4" />
               </span>
             </motion.article>
           ))}
