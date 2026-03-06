@@ -56,9 +56,20 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
         // Auto-scroll to details on mobile when a client is selected
         if (selectedClient && window.innerWidth < 1024 && detailsRef.current) {
             // Use a small timeout to ensure the DOM has rendered the new content
-            setTimeout(() => {
-                detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
+            const scrollTimeout = setTimeout(() => {
+                const element = detailsRef.current;
+                if (element) {
+                    // Try to scroll the parent container (the modal)
+                    const container = element.closest('.overflow-y-auto');
+                    if (container) {
+                        const top = element.offsetTop;
+                        container.scrollTo({ top, behavior: 'smooth' });
+                    } else {
+                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            }, 150);
+            return () => clearTimeout(scrollTimeout);
         }
     }, [selectedClient?.id]);
 
@@ -334,11 +345,12 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                 {/* Main Content Detail */}
                 <div
                     ref={detailsRef}
-                    className="flex-1 flex flex-col bg-white dark:bg-zinc-900 transition-colors overflow-hidden"
+                    id="client-details-section"
+                    className="flex-1 flex flex-col bg-white dark:bg-zinc-900 transition-colors overflow-visible lg:overflow-hidden"
                 >
                     {selectedClient ? (
                         <>
-                            <header className="p-4 md:p-8 border-b border-border dark:border-zinc-800 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md gap-4">
+                            <header className="p-4 md:p-8 border-b border-border dark:border-zinc-800 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md gap-4 sticky top-0 z-20">
                                 <div className="flex items-center gap-4">
                                     <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center text-primary font-display font-bold text-2xl">
                                         {selectedClient.full_name?.[0]}
