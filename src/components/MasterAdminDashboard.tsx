@@ -383,7 +383,7 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                             <header className="flex justify-between items-center mb-10 pb-8 border-b border-zinc-800">
                                 <div className="flex items-center gap-6">
                                     <button onClick={() => setSubView("none")} className="p-4 bg-zinc-800 hover:bg-zinc-700 rounded-2xl transition-all"><ArrowLeft size={24} /></button>
-                                    <div><h3 className="text-3xl font-black uppercase tracking-tighter italic">{subView === "appointments" ? "Randevu" : subView === "clients" ? "Danışan" : subView === "health" ? "Sistem" : subView === "logs" ? "Güvenlik" : "Konum"} <span className="text-secondary not-italic">Detayları</span></h3></div>
+                                    <div><h3 className="text-3xl font-black uppercase tracking-tighter italic">{subView === "appointments" ? "Randevu" : subView === "clients" ? "Danışan" : subView === "health" ? "Sistem" : subView === "logs" ? "Güvenlik" : subView === "revenue" ? "Finans" : "Konum"} <span className="text-secondary not-italic">Detayları</span></h3></div>
                                 </div>
                             </header>
 
@@ -400,6 +400,57 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                                         </div>
                                     </div>
                                 ))}
+
+                                {subView === "clients" && clients.map((client) => (
+                                    <div key={client.id} className="bg-white/5 border border-zinc-800/50 p-6 rounded-3xl flex items-center justify-between group mb-4 hover:bg-zinc-800/50 transition-all">
+                                        <div className="flex items-center gap-6">
+                                            <div className="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary"><Users size={24} /></div>
+                                            <div>
+                                                <div className="font-bold text-lg">{client.full_name || 'İsimsiz Kullanıcı'}</div>
+                                                <div className="text-xs text-zinc-500 font-mono mt-1">{client.email}</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-8">
+                                            <div className="text-right">
+                                                <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Kayıt Tarihi</div>
+                                                <div className="font-mono text-white">{new Date(client.created_at).toLocaleDateString('tr-TR')}</div>
+                                            </div>
+                                            <div className="p-3 bg-zinc-800 rounded-xl text-zinc-500 group-hover:text-white transition-colors"><ChevronRight size={18} /></div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {subView === "revenue" && (
+                                    <div className="space-y-12">
+                                        <div className="grid md:grid-cols-3 gap-8">
+                                            <div className="bg-zinc-950 p-8 rounded-3xl border border-white/5">
+                                                <div className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-2">Net Ciro</div>
+                                                <div className="text-4xl font-black text-white tracking-tighter">₺{stats.totalRevenue}</div>
+                                            </div>
+                                            <div className="bg-zinc-950 p-8 rounded-3xl border border-white/5">
+                                                <div className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-2">Ort. Seans Ücreti</div>
+                                                <div className="text-4xl font-black text-secondary tracking-tighter">₺850</div>
+                                            </div>
+                                            <div className="bg-zinc-950 p-8 rounded-3xl border border-white/5">
+                                                <div className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-2">Tahmin Verimi</div>
+                                                <div className="text-4xl font-black text-emerald-500 tracking-tighter">%100</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <h4 className="text-xl font-bold mb-6">Seans Bazlı Gelir Dökümü</h4>
+                                            {appointments.slice(0, 10).map((apt, i) => (
+                                                <div key={i} className="flex justify-between items-center p-6 bg-white/5 rounded-2xl border border-zinc-900">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                                                        <span className="font-bold text-zinc-300">{apt.full_name}</span>
+                                                    </div>
+                                                    <div className="font-mono font-bold text-secondary">₺850.00</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
                                 {subView === "health" && (
                                     <div className="grid md:grid-cols-2 gap-8">
