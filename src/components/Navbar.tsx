@@ -70,9 +70,9 @@ const Navbar = ({ onPortalOpen }: { onPortalOpen: () => void }) => {
         <div className="flex md:hidden items-center gap-2">
           <button
             onClick={onPortalOpen}
-            className="px-2 py-1.5 rounded-full glass border-primary/20 text-primary text-[10px] font-bold hover:bg-primary/5 transition-all duration-300 flex-shrink-0"
+            className="px-4 py-1.5 rounded-full glass border-primary/20 text-primary text-[10px] font-bold hover:bg-primary/5 transition-all duration-300 flex-shrink-0"
           >
-            Panel
+            Danışan Paneli
           </button>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}

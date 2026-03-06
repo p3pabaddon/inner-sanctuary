@@ -110,8 +110,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                     // Update active count in stats instantly
                     setStats(prev => ({
                         ...prev,
-                        active: onlineIds.size > 0 ? Array.from(onlineIds).filter(id => id !== 'admin').length : 0
-                        // Note: ideally we filter out admins if they use the same channel
+                        active: onlineIds.size
                     }));
                 })
                 .subscribe();
@@ -492,21 +491,23 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                             </div>
                                         ))}
                                     </div>
-                                    <div className="relative">
-                                        <input
-                                            type="text"
-                                            value={adminMessage}
-                                            onChange={(e) => setAdminMessage(e.target.value)}
-                                            onKeyDown={(e) => e.key === 'Enter' && sendAdminMessage()}
-                                            placeholder="Mesajınızı yazın..."
-                                            className="w-full pl-6 pr-14 py-4 rounded-2xl bg-accent/20 dark:bg-zinc-800/50 border-none focus:ring-2 focus:ring-primary/20 outline-none font-body text-sm text-foreground placeholder:text-muted-foreground/50"
-                                        />
-                                        <button
-                                            onClick={sendAdminMessage}
-                                            className="absolute right-2 top-2 bottom-2 px-4 rounded-xl bg-primary text-white hover:scale-105 active:scale-95 transition-all"
-                                        >
-                                            <Send size={18} />
-                                        </button>
+                                    <div className="sticky bottom-0 bg-white dark:bg-zinc-900 pt-2 pb-4 mt-auto z-10">
+                                        <div className="relative">
+                                            <input
+                                                type="text"
+                                                value={adminMessage}
+                                                onChange={(e) => setAdminMessage(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && sendAdminMessage()}
+                                                placeholder="Mesajınızı yazın..."
+                                                className="w-full pl-6 pr-24 py-4 rounded-2xl bg-accent/20 dark:bg-zinc-800/50 border-none focus:ring-2 focus:ring-primary/20 outline-none font-body text-sm text-foreground placeholder:text-muted-foreground/50"
+                                            />
+                                            <button
+                                                onClick={sendAdminMessage}
+                                                className="absolute right-2 top-2 bottom-2 px-6 rounded-xl bg-primary text-white hover:scale-105 active:scale-95 transition-all font-body font-bold text-xs flex items-center gap-2"
+                                            >
+                                                Gönder <Send size={14} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
