@@ -47,10 +47,54 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             fetchAdminData();
         }
 
+        // Realtime Messages Subscription
+        let messageSubscription: any;
+        if (isOpen && selectedClient) {
+            messageSubscription = supabase
+                .channel('admin-realtime-messages')
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'messages',
+                    filter: `receiver_id=eq.${selectedClient.id}` // This is slightly tricky, we'd need to filter by current selected client
+                }, (payload) => {
+                    // Update messages if the new message is related to the selected client
+                    if (payload.new.sender_id === selectedClient.id || payload.new.receiver_id === selectedClient.id) {
+                        setMessages(prev => [...prev, payload.new]);
+                    }
+                })
+                .subscribe();
+        }
+
+        // Activity Heartbeat for Admin
+        let activityInterval: any;
+        if (isOpen) {
+            const updateAdminActivity = async () => {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    await supabase
+                        .from('profiles')
+                        .update({ last_seen: new Date().toISOString() })
+                        .eq('id', user.id);
+                }
+            };
+            updateAdminActivity();
+            activityInterval = setInterval(updateAdminActivity, 30000);
+
+            // Periodically refresh stats to update active count
+            const statsInterval = setInterval(fetchAdminData, 60000); // Every minute
+            return () => {
+                clearInterval(activityInterval);
+                clearInterval(statsInterval);
+                if (messageSubscription) supabase.removeChannel(messageSubscription);
+            };
+        }
+
         return () => {
             document.body.style.overflow = 'unset';
+            if (messageSubscription) supabase.removeChannel(messageSubscription);
         };
-    }, [isOpen]);
+    }, [isOpen, selectedClient?.id]);
 
     useEffect(() => {
         // Auto-scroll to details on mobile when a client is selected
@@ -83,9 +127,14 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 
         if (profiles) {
             setClients(profiles);
+
+            // Define active as seen in the last 5 minutes
+            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+            const activeCount = profiles.filter(p => p.last_seen && p.last_seen > fiveMinutesAgo).length;
+
             setStats({
                 total: profiles.length,
-                active: profiles.filter(p => p.progress > 0).length
+                active: activeCount
             });
         }
         setLoading(false);

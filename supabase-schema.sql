@@ -6,6 +6,7 @@ CREATE TABLE profiles (
   progress INTEGER DEFAULT 0,
   avatar_url TEXT,
   is_admin BOOLEAN DEFAULT FALSE, -- Admin kontrolü için eklendi
+  last_seen TIMESTAMPTZ DEFAULT NOW(), -- Aktiflik takibi için eklendi
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

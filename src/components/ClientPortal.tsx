@@ -58,7 +58,7 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
             }
         });
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             if (session) {
                 setUser(session.user);
                 setIsLoggedIn(true);
@@ -69,11 +69,50 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
             }
         });
 
+        // Realtime Messages Subscription
+        let messageSubscription: any;
+        if (isLoggedIn && user) {
+            messageSubscription = supabase
+                .channel('realtime-messages')
+                .on('postgres_changes', {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'messages',
+                    filter: `receiver_id=eq.${user.id}`
+                }, (payload) => {
+                    const newMessage = {
+                        sender: payload.new.sender_role,
+                        text: payload.new.text,
+                        time: new Date(payload.new.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                    };
+                    setDashboardData((prev: any) => ({
+                        ...prev,
+                        messages: [...prev.messages, newMessage]
+                    }));
+                })
+                .subscribe();
+        }
+
+        // Activity Heartbeat (last_seen)
+        let activityInterval: any;
+        if (isLoggedIn && user) {
+            const updateActivity = async () => {
+                await supabase
+                    .from('profiles')
+                    .update({ last_seen: new Date().toISOString() })
+                    .eq('id', user.id);
+            };
+            updateActivity();
+            activityInterval = setInterval(updateActivity, 30000); // Every 30 seconds
+        }
+
         return () => {
             document.body.style.overflow = 'unset';
-            subscription.unsubscribe();
+            authSubscription.unsubscribe();
+            if (messageSubscription) supabase.removeChannel(messageSubscription);
+            if (activityInterval) clearInterval(activityInterval);
         };
-    }, [isOpen]);
+    }, [isOpen, isLoggedIn, user?.id]);
 
     const fetchPortalData = async (userId: string) => {
         setLoading(true);
@@ -213,19 +252,29 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
     };
 
     const sendMessage = async () => {
-        if (!message.trim()) return;
+        if (!message.trim() || !user) return;
 
-        // Optimistic update
-        const newMessage = { sender: "User", text: message, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
-        setDashboardData((prev: any) => ({
-            ...prev,
-            messages: [...prev.messages, newMessage]
-        }));
+        const { error } = await supabase.from('messages').insert([
+            {
+                text: message,
+                sender_id: user.id,
+                receiver_id: '00000000-0000-0000-0000-000000000000', // Default admin ID placeholder
+                sender_role: 'User'
+            }
+        ]);
 
-        // In real app:
-        // await supabase.from('messages').insert([{ text: message, sender_id: user.id, sender_role: 'User' }]);
-
-        setMessage("");
+        if (!error) {
+            const newMessage = {
+                sender: "User",
+                text: message,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+            setDashboardData((prev: any) => ({
+                ...prev,
+                messages: [...prev.messages, newMessage]
+            }));
+            setMessage("");
+        }
     };
 
     if (!isOpen) return null;
