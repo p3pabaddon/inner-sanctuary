@@ -369,10 +369,22 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                         : "bg-white dark:bg-zinc-800 border-border dark:border-zinc-700 hover:border-primary/50 text-foreground"
                                         }`}
                                 >
-                                    <div className="text-left">
-                                        <div className="font-display font-bold text-sm">{client.full_name || "İsimsiz"}</div>
-                                        <div className={`text-[10px] ${selectedClient?.id === client.id ? "text-white/70" : "text-muted-foreground"}`}>
-                                            %{client.progress || 0} Gelişim
+                                    <div className="text-left flex flex-col">
+                                        <div className="flex items-center gap-2">
+                                            <div className="font-display font-bold text-sm">{client.full_name || "İsimsiz"}</div>
+                                            {client.last_seen && new Date(client.last_seen) > new Date(Date.now() - 5 * 60 * 1000) && (
+                                                <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" title="Çevrimiçi" />
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className={`text-[10px] ${selectedClient?.id === client.id ? "text-white/70" : "text-muted-foreground"}`}>
+                                                %{client.progress || 0} Gelişim
+                                            </div>
+                                            {client.last_seen && new Date(client.last_seen) > new Date(Date.now() - 5 * 60 * 1000) && (
+                                                <span className={`text-[8px] font-bold uppercase tracking-tighter ${selectedClient?.id === client.id ? "text-white/50" : "text-green-500/80"}`}>
+                                                    Çevrimiçi
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
                                     <ChevronRight size={16} className={selectedClient?.id === client.id ? "text-white" : "text-muted-foreground group-hover:translate-x-1 transition-transform"} />
