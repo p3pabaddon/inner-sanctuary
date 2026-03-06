@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import {
     User,
     Lock,
@@ -335,7 +336,7 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
             }));
             setSelectedMood(null);
             setMoodNote("");
-            alert("Ruh halin kaydedildi. Harikasın! ✨");
+            toast.success("Ruh halin kaydedildi. Harikasın! ✨");
         }
         setIsLoggingMood(false);
     };

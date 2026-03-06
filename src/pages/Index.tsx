@@ -32,12 +32,6 @@ const Index = () => {
   }, [searchParams]);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [theme, setTheme] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('theme') || 'light';
-    }
-    return 'light';
-  });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -76,15 +70,6 @@ const Index = () => {
   };
 
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  useEffect(() => {
     if (user?.isAdmin && isPortalOpen) {
       console.log("Admin detected, switching portal...");
       setIsPortalOpen(false);
@@ -109,28 +94,14 @@ const Index = () => {
       <AboutSection />
       <ServicesSection />
       <MethodsSection />
-      <AssessmentSection />
-      <TestimonialsSection />
-      <ComplianceSection />
       <BlogSection />
       <AppointmentSection />
-      <FAQSection />
-      <ContactSection />
       <Footer />
 
       <ClientPortal isOpen={isPortalOpen} onClose={() => setIsPortalOpen(false)} />
       <AdminPanel isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
 
-      {/* Dark Mode Toggle */}
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setTheme(prev => prev === 'light' ? 'dark' : 'light')}
-        className="fixed bottom-8 right-8 z-[100] w-14 h-14 bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md rounded-full shadow-elevated border border-white/50 dark:border-zinc-700/50 flex items-center justify-center text-primary transition-all"
-        title={theme === 'light' ? 'Karanlık Mod' : 'Aydınlık Mod'}
-      >
-        {theme === 'light' ? <Moon size={24} /> : <Sun size={24} />}
-      </motion.button>
+      <AdminPanel isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
     </div>
   );
 };

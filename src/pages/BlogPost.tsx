@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Calendar, User, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import Navbar from "@/components/Navbar";
 
@@ -97,7 +98,7 @@ const BlogPost = () => {
                         <button
                             onClick={() => {
                                 navigator.clipboard.writeText(window.location.href);
-                                alert("Link kopyalandı!");
+                                toast.success("Link kopyalandı!");
                             }}
                             className="flex items-center gap-2 px-6 py-3 rounded-full bg-accent/50 hover:bg-primary hover:text-white transition-all font-body text-sm font-bold"
                         >
