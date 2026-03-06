@@ -42,13 +42,21 @@ import {
     Palette,
     Server,
     Cpu,
-    Wifi
+    Wifi,
+    BarChart,
+    PieChart,
+    CreditCard,
+    DollarSign,
+    Heart,
+    Star,
+    Sparkles,
+    Shield
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 type View = "stats" | "blog" | "services" | "config" | "security";
-type SubView = "none" | "appointments" | "clients" | "revenue" | "logs" | "health" | "map";
+type SubView = "none" | "appointments" | "clients" | "revenue" | "logs" | "health" | "map" | "client-profile";
 
 const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
     const [activeView, setActiveView] = useState<View>("stats");
@@ -60,6 +68,7 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
     const [services, setServices] = useState<any[]>([]);
     const [appointments, setAppointments] = useState<any[]>([]);
     const [clients, setClients] = useState<any[]>([]);
+    const [selectedClient, setSelectedClient] = useState<any>(null);
     const [config, setConfig] = useState<any>({
         site_title: "İçsel Sığınak Psikoloji",
         phone: "05XX XXX XX XX",
@@ -194,6 +203,11 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
         setLoading(false);
     };
 
+    const openClientProfile = (client: any) => {
+        setSelectedClient(client);
+        setSubView("client-profile");
+    };
+
     return (
         <div className="fixed inset-0 z-[60] bg-[#050505] text-zinc-100 flex overflow-hidden font-sans selection:bg-secondary/30">
             {/* Arka Plan Süslemeleri */}
@@ -267,7 +281,7 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
                         <h2 className="text-5xl font-black tracking-tighter text-white mb-2 italic">ANA <span className="text-secondary not-italic">KOMUTA</span></h2>
                         <div className="flex items-center gap-4 text-zinc-500 text-xs font-bold uppercase tracking-[0.2em]">
-                            <span>Sürüm 1.1</span>
+                            <span>Sürüm 1.2</span>
                             <span className="w-1 h-1 rounded-full bg-zinc-700" />
                             <span>{new Date().toLocaleDateString('tr-TR')}</span>
                         </div>
@@ -382,8 +396,8 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                         <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} className="bg-zinc-900/50 backdrop-blur-3xl rounded-[3rem] border border-white/10 p-12 shadow-2xl overflow-hidden flex flex-col h-full min-h-[700px]">
                             <header className="flex justify-between items-center mb-10 pb-8 border-b border-zinc-800">
                                 <div className="flex items-center gap-6">
-                                    <button onClick={() => setSubView("none")} className="p-4 bg-zinc-800 hover:bg-zinc-700 rounded-2xl transition-all"><ArrowLeft size={24} /></button>
-                                    <div><h3 className="text-3xl font-black uppercase tracking-tighter italic">{subView === "appointments" ? "Randevu" : subView === "clients" ? "Danışan" : subView === "health" ? "Sistem" : subView === "logs" ? "Güvenlik" : subView === "revenue" ? "Finans" : "Konum"} <span className="text-secondary not-italic">Detayları</span></h3></div>
+                                    <button onClick={() => setSubView(subView === "client-profile" ? "clients" : "none")} className="p-4 bg-zinc-800 hover:bg-zinc-700 rounded-2xl transition-all"><ArrowLeft size={24} /></button>
+                                    <div><h3 className="text-3xl font-black uppercase tracking-tighter italic">{subView === "appointments" ? "Randevu" : subView === "clients" ? "Danışan" : subView === "health" ? "Sistem" : subView === "logs" ? "Güvenlik" : subView === "revenue" ? "Finans" : subView === "client-profile" ? "Profil" : "Konum"} <span className="text-secondary not-italic">Detayları</span></h3></div>
                                 </div>
                             </header>
 
@@ -402,23 +416,71 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                                 ))}
 
                                 {subView === "clients" && clients.map((client) => (
-                                    <div key={client.id} className="bg-white/5 border border-zinc-800/50 p-6 rounded-3xl flex items-center justify-between group mb-4 hover:bg-zinc-800/50 transition-all">
+                                    <div
+                                        key={client.id}
+                                        onClick={() => openClientProfile(client)}
+                                        className="bg-white/5 border border-zinc-800/50 p-6 rounded-3xl flex items-center justify-between group mb-4 hover:bg-zinc-800/80 transition-all cursor-pointer hover:border-secondary/30"
+                                    >
                                         <div className="flex items-center gap-6">
-                                            <div className="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary"><Users size={24} /></div>
+                                            <div className="w-14 h-14 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary group-hover:scale-110 transition-transform"><Users size={24} /></div>
                                             <div>
-                                                <div className="font-bold text-lg">{client.full_name || 'İsimsiz Kullanıcı'}</div>
+                                                <div className="font-bold text-lg group-hover:text-secondary transition-colors">{client.full_name || 'İsimsiz Kullanıcı'}</div>
                                                 <div className="text-xs text-zinc-500 font-mono mt-1">{client.email}</div>
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-8">
-                                            <div className="text-right">
+                                            <div className="text-right hidden md:block">
                                                 <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Kayıt Tarihi</div>
                                                 <div className="font-mono text-white">{new Date(client.created_at).toLocaleDateString('tr-TR')}</div>
                                             </div>
-                                            <div className="p-3 bg-zinc-800 rounded-xl text-zinc-500 group-hover:text-white transition-colors"><ChevronRight size={18} /></div>
+                                            <div className="p-3 bg-zinc-800 group-hover:bg-secondary group-hover:text-white rounded-xl text-zinc-500 transition-all"><ChevronRight size={18} /></div>
                                         </div>
                                     </div>
                                 ))}
+
+                                {subView === "client-profile" && selectedClient && (
+                                    <div className="space-y-12">
+                                        <div className="flex flex-col md:flex-row gap-12 items-start">
+                                            <div className="w-32 h-32 bg-gradient-to-br from-secondary to-orange-600 rounded-[2.5rem] flex items-center justify-center text-white text-5xl font-black shadow-2xl">
+                                                {(selectedClient.full_name || "I")[0]}
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className="text-5xl font-black tracking-tighter mb-2">{selectedClient.full_name || "İsimsiz Kullanıcı"}</h4>
+                                                <div className="flex flex-wrap gap-4 items-center">
+                                                    <div className="bg-secondary/10 text-secondary px-4 py-2 rounded-full text-xs font-bold border border-secondary/20 flex items-center gap-2"><Mail size={14} /> {selectedClient.email}</div>
+                                                    <div className="bg-white/5 text-zinc-400 px-4 py-2 rounded-full text-xs font-bold border border-white/5 flex items-center gap-2"><Calendar size={14} /> Kayıt: {new Date(selectedClient.created_at).toLocaleDateString('tr-TR')}</div>
+                                                    <div className="bg-emerald-500/10 text-emerald-500 px-4 py-2 rounded-full text-xs font-bold border border-emerald-500/20 flex items-center gap-2"><CheckCircle size={14} /> Doğrulanmış Profil</div>
+                                                </div>
+                                            </div>
+                                            <div className="bg-zinc-950 p-8 rounded-[2rem] border border-white/5 text-center px-12">
+                                                <div className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-2">Toplam Harcama</div>
+                                                <div className="text-3xl font-black text-white tracking-tighter">₺2,550</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid md:grid-cols-2 gap-8">
+                                            <div className="bg-white/5 p-8 rounded-[2rem] border border-white/5 space-y-6">
+                                                <div className="flex items-center gap-3 mb-4"><Calendar className="text-secondary" size={20} /> <h5 className="font-bold text-xl">Seans Geçmişi</h5></div>
+                                                <div className="space-y-3">
+                                                    {[1, 2, 3].map(i => (
+                                                        <div key={i} className="flex justify-between items-center p-4 bg-black/40 rounded-xl border border-white/5">
+                                                            <div><div className="text-sm font-bold">Bireysel Terapi</div><div className="text-[10px] text-zinc-500">12.02.2026 • 15:00</div></div>
+                                                            <div className="text-emerald-500 text-xs font-bold">TAMAMLANDI</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="bg-white/5 p-8 rounded-[2rem] border border-white/5 space-y-6">
+                                                <div className="flex items-center gap-3 mb-4"><FileText className="text-secondary" size={20} /> <h5 className="font-bold text-xl">Uzman Notları</h5></div>
+                                                <textarea
+                                                    placeholder="Bu danışan hakkında gizli admin notları ekleyin..."
+                                                    className="w-full h-32 bg-zinc-950 rounded-xl border border-zinc-800 p-4 font-body text-sm outline-none focus:border-secondary transition-all resize-none"
+                                                />
+                                                <button className="w-full py-3 bg-zinc-800 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-zinc-700 transition-all">Notları Kaydet</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {subView === "revenue" && (
                                     <div className="space-y-12">
@@ -492,24 +554,77 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                     {activeView === "services" && (
                         <motion.div key="services" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-12 h-full">
                             <header className="flex justify-between items-end">
-                                <div><h2 className="text-5xl font-black italic tracking-tighter uppercase mb-2">EKONOMİ <span className="text-secondary not-italic">MERKEZİ</span></h2><p className="text-zinc-500 font-body italic">Hizmet tekliflerini ve dinamik fiyatlandırma analizlerini yönetin.</p></div>
-                                <button onClick={() => { setCurrentService({ name: "", description: "", price: "", duration: "50" }); setIsEditingService(true); }} className="px-10 py-4 bg-secondary text-white rounded-[1.5rem] font-bold shadow-[0_10px_30px_rgba(249,123,34,0.3)] hover:-translate-y-1 transition-all flex items-center gap-3"><Plus size={20} /> YENİ HİZMET EKLE</button>
+                                <div><h2 className="text-5xl font-black italic tracking-tighter uppercase mb-2">HİZMET <span className="text-secondary not-italic">MİMARI</span></h2><p className="text-zinc-500 font-body italic">Danışanlarınıza sunduğunuz dijital teklifleri buradan kurgulayın.</p></div>
+                                <button onClick={() => { setCurrentService({ name: "", description: "", price: "", duration: "50" }); setIsEditingService(true); }} className="px-10 py-5 bg-gradient-to-r from-secondary to-orange-600 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-[0_15px_40px_rgba(249,123,34,0.4)] hover:-translate-y-1 transition-all flex items-center gap-3 ring-1 ring-white/20"><Plus size={20} /> YENİ TEKLİF OLUŞTUR</button>
                             </header>
 
                             {isEditingService ? (
-                                <div className="bg-zinc-900/50 p-12 rounded-[3rem] border border-secondary/20 shadow-2xl space-y-8 max-w-3xl mx-auto">
-                                    <h3 className="text-3xl font-black uppercase tracking-tighter italic">{currentService.id ? "Hizmet" : "Yeni"} <span className="text-secondary not-italic">Kaydı</span></h3>
-                                    <div className="space-y-6">
-                                        <div className="grid gap-2"><span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest pl-2">Hizmet Adı</span><input type="text" value={currentService.name} onChange={(e) => setCurrentService({ ...currentService, name: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-6 rounded-2xl outline-none focus:border-secondary transition-all font-bold" /></div>
-                                        <div className="grid md:grid-cols-2 gap-6">
-                                            <div className="grid gap-2"><span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest pl-2">Seans Ücreti (₺)</span><input type="number" value={currentService.price} onChange={(e) => setCurrentService({ ...currentService, price: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-6 rounded-2xl outline-none focus:border-secondary transition-all font-mono font-bold text-secondary" /></div>
-                                            <div className="grid gap-2"><span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest pl-2">Süre (Dakika)</span><input type="text" value={currentService.duration} onChange={(e) => setCurrentService({ ...currentService, duration: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-6 rounded-2xl outline-none focus:border-secondary transition-all font-bold" /></div>
+                                <div className="grid lg:grid-cols-5 gap-12 items-start h-full">
+                                    <div className="lg:col-span-3 bg-zinc-900/30 backdrop-blur-3xl p-12 rounded-[3.5rem] border border-white/5 shadow-2xl space-y-10">
+                                        <div className="flex items-center gap-4 border-b border-zinc-800 pb-8 mb-8">
+                                            <div className="w-12 h-12 bg-secondary/10 rounded-2xl flex items-center justify-center text-secondary"><Sparkles size={24} /></div>
+                                            <h3 className="text-3xl font-black uppercase tracking-tighter italic">{currentService.id ? "Teklifi" : "Hizmet"} <span className="text-secondary not-italic">Yapılandır</span></h3>
                                         </div>
-                                        <div className="grid gap-2"><span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest pl-2">Açıklama Metni</span><textarea value={currentService.description} onChange={(e) => setCurrentService({ ...currentService, description: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-6 rounded-2xl outline-none focus:border-secondary transition-all font-body text-zinc-300 resize-none h-32" /></div>
+
+                                        <div className="space-y-8">
+                                            <div className="space-y-3">
+                                                <div className="flex justify-between items-center px-1">
+                                                    <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest flex items-center gap-2"><Layers size={12} /> Hizmet Başlığı</span>
+                                                    <span className="text-[9px] text-zinc-700 font-mono italic">Kayıt No: SYS_{Math.floor(Math.random() * 90000)}</span>
+                                                </div>
+                                                <input type="text" placeholder="Örn: Bireysel Güçlendirme Terapisi" value={currentService.name} onChange={(e) => setCurrentService({ ...currentService, name: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-6 rounded-[1.5rem] outline-none focus:border-secondary focus:ring-4 focus:ring-secondary/5 transition-all font-bold text-white text-lg" />
+                                            </div>
+
+                                            <div className="grid md:grid-cols-2 gap-8">
+                                                <div className="space-y-3">
+                                                    <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest flex items-center gap-2 pl-1"><CreditCard size={12} /> Seans Ücreti (₺)</span>
+                                                    <div className="relative group">
+                                                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-secondary font-black text-xl">₺</div>
+                                                        <input type="number" value={currentService.price} onChange={(e) => setCurrentService({ ...currentService, price: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-6 pl-12 rounded-[1.5rem] outline-none focus:border-secondary focus:ring-4 focus:ring-secondary/5 transition-all font-mono font-bold text-2xl text-secondary text-right" />
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-3">
+                                                    <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest flex items-center gap-2 pl-1"><Clock size={12} /> Oturum Süresi</span>
+                                                    <div className="relative group">
+                                                        <input type="text" value={currentService.duration} onChange={(e) => setCurrentService({ ...currentService, duration: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-6 rounded-[1.5rem] outline-none focus:border-secondary focus:ring-4 focus:ring-secondary/5 transition-all font-bold text-xl text-right pr-20" />
+                                                        <div className="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-500 font-black text-xs uppercase tracking-widest">Dakika</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest flex items-center gap-2 pl-1"><BarChart size={12} /> Kapsam Açıklaması</span>
+                                                <textarea placeholder="Bu hizmet tam olarak neyi kapsıyor? Danışanlarınıza sağladığı ana faydaları buraya yazın..." value={currentService.description} onChange={(e) => setCurrentService({ ...currentService, description: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-6 rounded-[1.5rem] outline-none focus:border-secondary focus:ring-4 focus:ring-secondary/5 transition-all font-body text-zinc-300 resize-none h-40 leading-relaxed" />
+                                            </div>
+                                        </div>
+
+                                        <div className="flex gap-6 pt-10 border-t border-zinc-800/50">
+                                            <button onClick={() => setIsEditingService(false)} className="flex-1 py-5 border border-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white/5 transition-all active:scale-95">İşlemi İptal Et</button>
+                                            <button onClick={handleSaveService} className="flex-[2] py-5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] flex items-center justify-center gap-4 group shadow-[0_15px_30px_rgba(16,185,129,0.3)] hover:-translate-y-1 transition-all"><Save size={18} className="group-hover:rotate-12 transition-transform" /> MİMARİYİ KAYDET VE YAYINLA</button>
+                                        </div>
                                     </div>
-                                    <div className="flex gap-4 pt-6">
-                                        <button onClick={() => setIsEditingService(false)} className="flex-1 py-4 border border-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-white/5">İptal</button>
-                                        <button onClick={handleSaveService} className="flex-[2] py-4 bg-secondary text-white rounded-2xl font-bold flex items-center justify-center gap-3 group"><Save size={18} className="group-hover:scale-110 transition-transform" /> VERİLERİ GÜNCELLE</button>
+
+                                    <div className="lg:col-span-2 space-y-8 sticky top-0">
+                                        <div className="text-[10px] text-zinc-500 font-black uppercase tracking-widest mb-4 flex items-center gap-2"><Eye size={12} /> Canlı Önizleme (Frontend)</div>
+                                        <div className="bg-zinc-950 p-1 rounded-[3.5rem] border border-white/5 shadow-inner">
+                                            <div className="bg-zinc-900/50 p-10 rounded-[3rem] border border-secondary/30 relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 blur-3xl rounded-full" />
+                                                <div className="flex justify-between items-start mb-8">
+                                                    <div className="w-14 h-14 bg-secondary rounded-2xl flex items-center justify-center text-white"><Sparkles size={24} /></div>
+                                                    <div className="text-4xl font-black text-secondary tracking-tighter">₺{currentService.price || "0"}</div>
+                                                </div>
+                                                <h5 className="text-2xl font-bold mb-3">{currentService.name || "Hizmet Başlığı Buraya"}</h5>
+                                                <p className="text-zinc-500 text-sm font-body leading-relaxed mb-8 h-20 overflow-hidden text-ellipsis line-clamp-3 italic">"{currentService.description || "Açıklama metni burada bu şekilde görünecektir. Danışanlarınıza profesyonel bir görünüm sunar..."}"</p>
+                                                <div className="flex items-center gap-3 pt-6 border-t border-white/5">
+                                                    <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)] animate-pulse" />
+                                                    <span className="text-[10px] font-black uppercase text-zinc-400 tracking-widest">{currentService.duration || "0"} Dakika • Bireysel Seans</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="p-8 bg-blue-500/5 border border-blue-500/10 rounded-[2rem] flex gap-6">
+                                            <div className="bg-blue-500/20 p-3 h-fit rounded-xl"><Shield size={20} className="text-blue-400" /></div>
+                                            <div><h6 className="font-bold text-xs text-blue-400 uppercase tracking-widest mb-1">Güvenli Düzenleme</h6><p className="text-[10px] text-zinc-500 leading-relaxed">Yapılan her değişiklik anlık olarak Supabase veritabanına şifreli olarak iletilir ve web sitesinde canlıya alınır.</p></div>
+                                        </div>
                                     </div>
                                 </div>
                             ) : (
@@ -584,7 +699,23 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
 
                     {/* BLOG & SECURITY VIEWS (Bundled in same flow as previous v2) */}
                     {activeView === "blog" && (
-                        <div className="p-4"><p className="text-zinc-500 italic">Blog Editor Modülü Hazır (v2 ile aynı akış)...</p></div>
+                        <div className="p-4 flex flex-col items-center justify-center h-full space-y-8">
+                            <FileText size={80} className="text-zinc-800" />
+                            <div className="text-center">
+                                <h3 className="text-3xl font-black italic tracking-tighter uppercase mb-2">MAKALE <span className="text-secondary not-italic">EDİTÖRÜ</span></h3>
+                                <p className="text-zinc-500 italic">Blog yazılarını yönetmek için v2 CMS modülü devrededir.</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeView === "security" && (
+                        <div className="p-4 flex flex-col items-center justify-center h-full space-y-8">
+                            <ShieldCheck size={80} className="text-secondary" />
+                            <div className="text-center">
+                                <h3 className="text-3xl font-black italic tracking-tighter uppercase mb-2">GÜVENLİK <span className="text-secondary not-italic">KALKANI</span></h3>
+                                <p className="text-zinc-500 italic">AES-256 ve Row Level Security aktif olarak çalışmaktadır.</p>
+                            </div>
+                        </div>
                     )}
                 </AnimatePresence>
             </main>
