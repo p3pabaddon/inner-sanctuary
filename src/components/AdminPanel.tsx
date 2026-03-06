@@ -99,12 +99,19 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
         // Supabase Presence for Online Status Tracking
         let presenceChannel: any;
         if (isOpen) {
-            presenceChannel = supabase.channel('online-users');
+            presenceChannel = supabase.channel('online-users', {
+                config: {
+                    presence: {
+                        key: 'admin',
+                    },
+                },
+            });
 
             presenceChannel
                 .on('presence', { event: 'sync' }, () => {
                     const state = presenceChannel.presenceState();
                     const onlineIds = new Set(Object.keys(state));
+                    console.log("Online Users Sync:", onlineIds); // Debug
                     setOnlineUsers(onlineIds);
 
                     // Update active count in stats instantly
@@ -113,7 +120,14 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                         active: onlineIds.size
                     }));
                 })
-                .subscribe();
+                .subscribe(async (status: string) => {
+                    if (status === 'SUBSCRIBED') {
+                        await presenceChannel.track({
+                            user_id: 'admin',
+                            online_at: new Date().toISOString(),
+                        });
+                    }
+                });
         }
 
         return () => {
@@ -155,9 +169,13 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
         if (profiles) {
             setClients(profiles);
 
+            // Fallback active count logic: Database based (last 2 minutes)
+            const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000).toISOString();
+            const dbActiveCount = profiles.filter(p => p.last_seen && p.last_seen > twoMinutesAgo).length;
+
             setStats({
                 total: profiles.length,
-                active: onlineUsers.size // Fallback to current presence
+                active: Math.max(onlineUsers.size, dbActiveCount) // Use whichever is higher
             });
         }
         setLoading(false);
@@ -430,7 +448,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                 <div
                     ref={detailsRef}
                     id="client-details-section"
-                    className="flex-1 flex flex-col bg-white dark:bg-zinc-900 transition-colors overflow-visible lg:overflow-hidden"
+                    className="flex-1 flex flex-col bg-white dark:bg-zinc-900 transition-colors overflow-hidden"
                 >
                     {selectedClient ? (
                         <>
@@ -476,22 +494,24 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                             <div className="flex-1 flex flex-col lg:flex-row overflow-visible lg:overflow-hidden">
                                 {/* Chat Area */}
                                 <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-border flex flex-col p-6 lg:p-8 flex-shrink-0 min-h-[500px] lg:min-h-0 order-2 lg:order-1 outline-none">
-                                    <h4 className="font-display font-bold text-lg mb-6 flex items-center gap-2">
-                                        <MessageSquare size={20} className="text-primary" /> Mesajlaşma
-                                    </h4>
-                                    <div className="flex-1 overflow-y-auto space-y-4 mb-6 pr-2">
-                                        {messages.map((m, i) => (
-                                            <div key={i} className={`flex ${m.sender_role === 'Specialist' ? 'justify-end' : 'justify-start'}`}>
-                                                <div className={`max-w-[85%] p-4 rounded-2xl text-sm font-body ${m.sender_role === 'Specialist'
-                                                    ? 'bg-primary text-white rounded-tr-none'
-                                                    : 'bg-accent/50 dark:bg-zinc-800/80 text-foreground dark:text-zinc-100 rounded-tl-none border border-transparent dark:border-zinc-700'
-                                                    }`}>
-                                                    {m.text}
+                                    <div className="flex-1 flex flex-col min-h-0">
+                                        <h4 className="font-display font-bold text-lg mb-6 flex items-center gap-2">
+                                            <MessageSquare size={20} className="text-primary" /> Mesajlaşma
+                                        </h4>
+                                        <div className="flex-1 overflow-y-auto space-y-4 mb-6 pr-2 min-h-[400px] lg:min-h-0">
+                                            {messages.map((m, i) => (
+                                                <div key={i} className={`flex ${m.sender_role === 'Specialist' ? 'justify-end' : 'justify-start'}`}>
+                                                    <div className={`max-w-[85%] p-4 rounded-2xl text-sm font-body ${m.sender_role === 'Specialist'
+                                                        ? 'bg-primary text-white rounded-tr-none'
+                                                        : 'bg-accent/50 dark:bg-zinc-800/80 text-foreground dark:text-zinc-100 rounded-tl-none border border-transparent dark:border-zinc-700'
+                                                        }`}>
+                                                        {m.text}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div className="sticky bottom-0 bg-white dark:bg-zinc-900 pt-2 pb-4 mt-auto z-10">
+                                    <div className="bg-white dark:bg-zinc-900 pt-2 pb-4 mt-auto">
                                         <div className="relative">
                                             <input
                                                 type="text"
@@ -510,151 +530,152 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* Activity & Files */}
-                                <div className="flex-1 p-6 lg:p-8 overflow-y-auto space-y-8 order-1 lg:order-2">
-                                    <AnimatePresence>
-                                        {isAddingNote && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: "auto" }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                className="bg-accent/30 p-6 rounded-3xl space-y-4 border border-primary/20"
-                                            >
-                                                <input
-                                                    type="text"
-                                                    placeholder="Not Başlığı (örn: 3. Seans Gözlemleri)"
-                                                    value={newNote.title}
-                                                    onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
-                                                    className="w-full bg-white dark:bg-zinc-800 px-4 py-2 rounded-xl border border-border dark:border-zinc-700 outline-none focus:ring-2 focus:ring-primary/20 font-display font-bold text-foreground"
-                                                />
-                                                <textarea
-                                                    placeholder="Not içeriğini yazın..."
-                                                    rows={4}
-                                                    value={newNote.content}
-                                                    onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
-                                                    className="w-full bg-white dark:bg-zinc-800 px-4 py-2 rounded-xl border border-border dark:border-zinc-700 outline-none focus:ring-2 focus:ring-primary/20 font-body text-sm resize-none text-foreground"
-                                                />
-                                                <div className="flex justify-end">
-                                                    <button
-                                                        onClick={handleAddNote}
-                                                        className="px-6 py-2 bg-primary text-white rounded-xl font-body font-bold text-sm shadow-md hover:scale-105 active:scale-95 transition-all"
-                                                    >
-                                                        Notu Kaydet
-                                                    </button>
+                            {/* Activity & Files */}
+                            <div className="flex-1 p-6 lg:p-8 overflow-y-auto space-y-8 order-1 lg:order-2">
+                                <AnimatePresence>
+                                    {isAddingNote && (
+                                        <motion.div
+                                            initial={{ opacity: 0, height: 0 }}
+                                            animate={{ opacity: 1, height: "auto" }}
+                                            exit={{ opacity: 0, height: 0 }}
+                                            className="bg-accent/30 p-6 rounded-3xl space-y-4 border border-primary/20"
+                                        >
+                                            <input
+                                                type="text"
+                                                placeholder="Not Başlığı (örn: 3. Seans Gözlemleri)"
+                                                value={newNote.title}
+                                                onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
+                                                className="w-full bg-white dark:bg-zinc-800 px-4 py-2 rounded-xl border border-border dark:border-zinc-700 outline-none focus:ring-2 focus:ring-primary/20 font-display font-bold text-foreground"
+                                            />
+                                            <textarea
+                                                placeholder="Not içeriğini yazın..."
+                                                rows={4}
+                                                value={newNote.content}
+                                                onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
+                                                className="w-full bg-white dark:bg-zinc-800 px-4 py-2 rounded-xl border border-border dark:border-zinc-700 outline-none focus:ring-2 focus:ring-primary/20 font-body text-sm resize-none text-foreground"
+                                            />
+                                            <div className="flex justify-end">
+                                                <button
+                                                    onClick={handleAddNote}
+                                                    className="px-6 py-2 bg-primary text-white rounded-xl font-body font-bold text-sm shadow-md hover:scale-105 active:scale-95 transition-all"
+                                                >
+                                                    Notu Kaydet
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+
+                                <div>
+                                    <h4 className="font-display font-bold text-lg mb-4 text-foreground">Gelişim ve Test Sonuçları</h4>
+                                    <div className="grid gap-3">
+                                        {testResults.length > 0 ? (
+                                            testResults.map((result, i) => (
+                                                <div key={i} className="p-4 rounded-2xl bg-accent/20 dark:bg-zinc-800/30 border border-border dark:border-zinc-700 flex items-center justify-between transition-colors">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 bg-white dark:bg-zinc-700 rounded-xl flex items-center justify-center text-primary shadow-sm transition-colors">
+                                                            <Check size={20} />
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-sm font-display font-bold text-foreground">{result.test_name}</div>
+                                                            <div className="text-[10px] text-muted-foreground uppercase">Sonuç: {result.result_label}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-xs font-body text-primary font-bold">Puan: {result.score}/20</div>
                                                 </div>
-                                            </motion.div>
+                                            ))
+                                        ) : (
+                                            <div className="p-4 rounded-2xl border border-dashed border-border dark:border-zinc-700 flex items-center justify-center text-muted-foreground font-body text-sm italic">
+                                                Henüz test çözülmemiş.
+                                            </div>
                                         )}
-                                    </AnimatePresence>
-
-                                    <div>
-                                        <h4 className="font-display font-bold text-lg mb-4 text-foreground">Gelişim ve Test Sonuçları</h4>
-                                        <div className="grid gap-3">
-                                            {testResults.length > 0 ? (
-                                                testResults.map((result, i) => (
-                                                    <div key={i} className="p-4 rounded-2xl bg-accent/20 dark:bg-zinc-800/30 border border-border dark:border-zinc-700 flex items-center justify-between transition-colors">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-10 h-10 bg-white dark:bg-zinc-700 rounded-xl flex items-center justify-center text-primary shadow-sm transition-colors">
-                                                                <Check size={20} />
-                                                            </div>
-                                                            <div>
-                                                                <div className="text-sm font-display font-bold text-foreground">{result.test_name}</div>
-                                                                <div className="text-[10px] text-muted-foreground uppercase">Sonuç: {result.result_label}</div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="text-xs font-body text-primary font-bold">Puan: {result.score}/20</div>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <div className="p-4 rounded-2xl border border-dashed border-border dark:border-zinc-700 flex items-center justify-center text-muted-foreground font-body text-sm italic">
-                                                    Henüz test çözülmemiş.
-                                                </div>
-                                            )}
-                                        </div>
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <h4 className="font-display font-bold text-lg mb-4">Klinik Notlar</h4>
-                                        <div className="space-y-3">
-                                            {notes.length > 0 ? (
-                                                notes.map((note, i) => (
-                                                    <div key={i} className="p-5 rounded-2xl bg-white dark:bg-zinc-800/50 border border-border dark:border-zinc-700 shadow-xs hover:shadow-sm transition-all group relative">
-                                                        <div className="flex justify-between items-start mb-2">
-                                                            <div className="font-display font-bold text-sm">{note.title}</div>
-                                                            <div className="flex items-center gap-2">
-                                                                <div className="text-[10px] text-muted-foreground bg-accent px-2 py-0.5 rounded-full">
-                                                                    {new Date(note.created_at).toLocaleDateString('tr-TR')}
-                                                                </div>
-                                                                <button
-                                                                    onClick={() => handleDeleteNote(note.id)}
-                                                                    className="text-muted-foreground hover:text-red-500 transition-colors p-1"
-                                                                    title="Notu Sil"
-                                                                >
-                                                                    <Trash2 size={14} />
-                                                                </button>
+                                <div>
+                                    <h4 className="font-display font-bold text-lg mb-4">Klinik Notlar</h4>
+                                    <div className="space-y-3">
+                                        {notes.length > 0 ? (
+                                            notes.map((note, i) => (
+                                                <div key={i} className="p-5 rounded-2xl bg-white dark:bg-zinc-800/50 border border-border dark:border-zinc-700 shadow-xs hover:shadow-sm transition-all group relative">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <div className="font-display font-bold text-sm">{note.title}</div>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="text-[10px] text-muted-foreground bg-accent px-2 py-0.5 rounded-full">
+                                                                {new Date(note.created_at).toLocaleDateString('tr-TR')}
                                                             </div>
+                                                            <button
+                                                                onClick={() => handleDeleteNote(note.id)}
+                                                                className="text-muted-foreground hover:text-red-500 transition-colors p-1"
+                                                                title="Notu Sil"
+                                                            >
+                                                                <Trash2 size={14} />
+                                                            </button>
                                                         </div>
-                                                        <p className="text-xs text-muted-foreground font-body leading-relaxed">{note.content}</p>
                                                     </div>
-                                                ))
-                                            ) : (
-                                                <div className="p-4 rounded-2xl border border-dashed border-border flex items-center justify-center text-muted-foreground font-body text-[10px] italic">
-                                                    Henüz klinik not eklenmemiş.
+                                                    <p className="text-xs text-muted-foreground font-body leading-relaxed">{note.content}</p>
                                                 </div>
-                                            )}
-                                        </div>
+                                            ))
+                                        ) : (
+                                            <div className="p-4 rounded-2xl border border-dashed border-border flex items-center justify-center text-muted-foreground font-body text-[10px] italic">
+                                                Henüz klinik not eklenmemiş.
+                                            </div>
+                                        )}
                                     </div>
+                                </div>
 
-                                    <div>
-                                        <h4 className="font-display font-bold text-lg mb-4">Yüklenen Dosyalar</h4>
-                                        <div className="grid gap-3">
-                                            {documents.length > 0 ? (
-                                                documents.map((doc, i) => (
-                                                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-zinc-800/50 border border-border dark:border-zinc-700 hover:shadow-sm transition-all group">
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="w-10 h-10 bg-accent dark:bg-zinc-700 rounded-xl flex items-center justify-center text-primary">
-                                                                <FileText size={20} />
-                                                            </div>
-                                                            <div>
-                                                                <div className="text-sm font-body font-bold text-foreground">{doc.name}</div>
-                                                                <div className="text-[10px] text-muted-foreground uppercase">{doc.size}</div>
-                                                            </div>
+                                <div>
+                                    <h4 className="font-display font-bold text-lg mb-4">Yüklenen Dosyalar</h4>
+                                    <div className="grid gap-3">
+                                        {documents.length > 0 ? (
+                                            documents.map((doc, i) => (
+                                                <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-zinc-800/50 border border-border dark:border-zinc-700 hover:shadow-sm transition-all group">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-10 h-10 bg-accent dark:bg-zinc-700 rounded-xl flex items-center justify-center text-primary">
+                                                            <FileText size={20} />
                                                         </div>
-                                                        <a
-                                                            href={doc.url}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            download={doc.name}
-                                                            className="p-2 rounded-lg hover:bg-accent dark:hover:bg-zinc-700 text-muted-foreground transition-all"
-                                                        >
-                                                            <Download size={18} />
-                                                        </a>
+                                                        <div>
+                                                            <div className="text-sm font-body font-bold text-foreground">{doc.name}</div>
+                                                            <div className="text-[10px] text-muted-foreground uppercase">{doc.size}</div>
+                                                        </div>
                                                     </div>
-                                                ))
-                                            ) : (
-                                                <div className="p-4 rounded-2xl border border-dashed border-border dark:border-zinc-700 flex items-center justify-center text-muted-foreground font-body text-sm italic">
-                                                    Henüz dosya yüklenmemiş.
+                                                    <a
+                                                        href={doc.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        download={doc.name}
+                                                        className="p-2 rounded-lg hover:bg-accent dark:hover:bg-zinc-700 text-muted-foreground transition-all"
+                                                    >
+                                                        <Download size={18} />
+                                                    </a>
                                                 </div>
-                                            )}
-                                        </div>
+                                            ))
+                                        ) : (
+                                            <div className="p-4 rounded-2xl border border-dashed border-border dark:border-zinc-700 flex items-center justify-center text-muted-foreground font-body text-sm italic">
+                                                Henüz dosya yüklenmemiş.
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
-                        </>
-                    ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
-                            <div className="w-24 h-24 bg-accent/30 rounded-full flex items-center justify-center mb-6">
-                                <Users size={40} className="text-muted-foreground/50" />
-                            </div>
-                            <h3 className="text-xl font-display font-bold">Danışan Seçilmedi</h3>
-                            <p className="font-body text-sm max-w-xs text-center mt-2">
-                                Detayları görüntülemek ve iletişime geçmek için sol taraftan bir danışan seçin.
-                            </p>
                         </div>
-                    )}
+                </>
+                ) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
+                    <div className="w-24 h-24 bg-accent/30 rounded-full flex items-center justify-center mb-6">
+                        <Users size={40} className="text-muted-foreground/50" />
+                    </div>
+                    <h3 className="text-xl font-display font-bold">Danışan Seçilmedi</h3>
+                    <p className="font-body text-sm max-w-xs text-center mt-2">
+                        Detayları görüntülemek ve iletişime geçmek için sol taraftan bir danışan seçin.
+                    </p>
                 </div>
-            </motion.div>
+                    )}
         </div>
+            </motion.div >
+        </div >
     );
 };
 
