@@ -231,7 +231,7 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-4">
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -244,24 +244,30 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-5xl bg-gradient-to-br from-white/90 dark:from-zinc-900/90 via-accent/30 dark:via-zinc-800/30 to-white/80 dark:to-zinc-900/80 glass-strong rounded-[2.5rem] shadow-elevated overflow-hidden flex flex-col md:flex-row h-full max-h-[90vh] md:min-h-[650px]"
+                className="relative w-full lg:max-w-5xl bg-gradient-to-br from-white/90 dark:from-zinc-900/90 via-accent/30 dark:via-zinc-800/30 to-white/80 dark:to-zinc-900/80 glass-strong rounded-none md:rounded-[2.5rem] shadow-elevated overflow-y-auto md:overflow-hidden flex flex-col md:flex-row h-full max-h-screen md:max-h-[90vh] md:min-h-[650px] z-10"
             >
                 <button
                     onClick={onClose}
-                    className="absolute top-6 right-6 z-10 p-2 rounded-full hover:bg-white/50 transition-colors"
+                    className="fixed top-4 right-4 z-[150] p-2 rounded-full bg-primary text-white shadow-2xl md:hidden flex items-center justify-center"
+                >
+                    <X size={24} />
+                </button>
+                <button
+                    onClick={onClose}
+                    className="absolute top-6 right-6 z-10 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors hidden md:block"
                 >
                     <X size={20} className="text-muted-foreground" />
                 </button>
 
                 {!isLoggedIn ? (
-                    <div className="w-full flex flex-col items-center justify-center p-12 bg-gradient-to-b from-transparent to-accent/20 overflow-y-auto">
-                        <div className="w-20 h-20 bg-white/50 backdrop-blur-md rounded-full flex items-center justify-center mb-8 shadow-sm">
+                    <div className="w-full flex flex-col items-center justify-center p-6 md:p-12 bg-gradient-to-b from-transparent to-accent/20 overflow-y-auto">
+                        <div className="w-20 h-20 bg-white/50 backdrop-blur-md rounded-full flex items-center justify-center mb-8 shadow-sm flex-shrink-0">
                             <Lock className="text-primary w-10 h-10" />
                         </div>
 
                         {isVerifying ? (
-                            <>
-                                <h2 className="text-3xl font-display font-bold text-foreground mb-4 text-center">
+                            <div className="w-full flex flex-col items-center">
+                                <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-4 text-center">
                                     E-posta Doğrulama
                                 </h2>
                                 <p className="text-muted-foreground font-body text-center mb-8 max-w-sm">
@@ -298,18 +304,18 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                                         Vazgeç
                                     </button>
                                 </form>
-                            </>
+                            </div>
                         ) : (
                             <>
                                 <h2 className="text-3xl font-display font-bold text-foreground mb-4">
                                     {isSignup ? "Yeni Kayıt Oluştur" : "Danışan Paneli Girişi"}
                                 </h2>
-                                <p className="text-muted-foreground font-body text-center mb-8 max-w-sm">
+                                <p className="text-muted-foreground font-body text-center mb-8 px-4 text-sm md:text-base">
                                     {isSignup
                                         ? "Bilgilerinizi doldurarak hemen kaydolun ve yolculuğunuza başlayın."
                                         : "Gelişim raporlarınıza ve dokümanlarınıza erişmek için güvenli giriş yapın."}
                                 </p>
-                                <form onSubmit={isSignup ? handleSignup : handleLogin} className="w-full max-w-sm space-y-4">
+                                <form onSubmit={isSignup ? handleSignup : handleLogin} className="w-full max-w-[calc(100vw-48px)] md:max-w-sm space-y-4">
                                     {isSignup && (
                                         <div className="space-y-2">
                                             <input
@@ -420,7 +426,7 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                                         animate={{ opacity: 1, y: 0 }}
                                         className="space-y-8"
                                     >
-                                        <header>
+                                        <header className="mb-6 md:mb-8">
                                             <h3 className="text-3xl font-display font-bold text-foreground mb-2 italic">Merhaba,</h3>
                                             <p className="text-muted-foreground font-body">Bugün kendini nasıl hissediyorsun?</p>
                                         </header>

@@ -231,7 +231,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-0 md:p-4">
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -243,14 +243,14 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                className="relative w-full max-w-7xl bg-white/90 dark:bg-zinc-900/90 glass-strong rounded-[2.5rem] shadow-elevated overflow-hidden flex flex-col lg:flex-row h-full max-h-[95vh] lg:h-[85vh] z-10"
+                className="relative w-full lg:max-w-7xl bg-white/90 dark:bg-zinc-900/90 glass-strong rounded-none md:rounded-[2.5rem] shadow-elevated overflow-y-auto lg:overflow-hidden flex flex-col lg:flex-row h-full max-h-screen md:max-h-[95vh] lg:h-[85vh] z-10"
             >
-                {/* Fixed Close Button for Mobile */}
+                {/* Fixed Close Button for Mobile - Moved inside scrollable area or kept fixed */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 z-[120] p-2 rounded-full bg-white/80 dark:bg-zinc-800/80 shadow-md md:hidden"
+                    className="fixed top-4 right-4 z-[150] p-2 rounded-full bg-primary text-white shadow-2xl md:hidden flex items-center justify-center"
                 >
-                    <X size={24} className="text-foreground" />
+                    <X size={24} />
                 </button>
                 {/* Admin Sidebar */}
                 <div className="w-full lg:w-80 border-r border-border p-6 lg:p-8 flex flex-col bg-accent/10 overflow-y-auto lg:overflow-visible flex-shrink-0">
@@ -324,7 +324,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                 <div className="flex-1 flex flex-col bg-white dark:bg-zinc-900 transition-colors overflow-hidden">
                     {selectedClient ? (
                         <>
-                            <header className="p-8 border-b border-border dark:border-zinc-800 flex justify-between items-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md">
+                            <header className="p-4 md:p-8 border-b border-border dark:border-zinc-800 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md gap-4">
                                 <div className="flex items-center gap-4">
                                     <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center text-primary font-display font-bold text-2xl">
                                         {selectedClient.full_name?.[0]}
@@ -363,9 +363,9 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                 </div>
                             </header>
 
-                            <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
+                            <div className="flex-1 flex flex-col lg:flex-row overflow-visible lg:overflow-hidden">
                                 {/* Chat Area */}
-                                <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-border flex flex-col p-6 lg:p-8 flex-shrink-0 min-h-[400px] lg:min-h-0 order-2 lg:order-1">
+                                <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-border flex flex-col p-6 lg:p-8 flex-shrink-0 min-h-[500px] lg:min-h-0 order-2 lg:order-1 outline-none">
                                     <h4 className="font-display font-bold text-lg mb-6 flex items-center gap-2">
                                         <MessageSquare size={20} className="text-primary" /> Mesajlaşma
                                     </h4>
