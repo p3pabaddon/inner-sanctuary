@@ -36,124 +36,86 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     const [isUploading, setIsUploading] = useState(false);
     const [testResults, setTestResults] = useState<any[]>([]);
 
+    // Lock body scroll when panel is open
     useEffect(() => {
-        // Body scroll lock
         if (isOpen) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'unset';
         }
-
-        if (isOpen) {
-            fetchAdminData();
-        }
-
-        // Realtime Messages Subscription
-        let messageSubscription: any;
-        if (isOpen && selectedClient) {
-            messageSubscription = supabase
-                .channel('admin-realtime-messages')
-                .on('postgres_changes', {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'messages'
-                    // Remove restrictive filter to catch both directions
-                }, (payload) => {
-                    // Update messages if the new message is related to the selected client
-                    if (payload.new.sender_id === selectedClient.id || payload.new.receiver_id === selectedClient.id) {
-                        // Check if message already exists to avoid duplicates from optimistic updates
-                        setMessages(prev => {
-                            const exists = prev.some(m => m.id === payload.new.id || (m.text === payload.new.text && Math.abs(new Date(m.created_at).getTime() - new Date(payload.new.created_at).getTime()) < 1000));
-                            if (exists) return prev;
-                            return [...prev, payload.new];
-                        });
-                    }
-                })
-                .subscribe();
-        }
-
-        // Activity Heartbeat for Admin
-        let activityInterval: any;
-        if (isOpen) {
-            const updateAdminActivity = async () => {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    await supabase
-                        .from('profiles')
-                        .update({ last_seen: new Date().toISOString() })
-                        .eq('id', user.id);
-                }
-            };
-            updateAdminActivity();
-            activityInterval = setInterval(updateAdminActivity, 30000);
-
-            // Periodically refresh stats to update active count
-            const statsInterval = setInterval(fetchAdminData, 60000); // Every minute
-            return () => {
-                clearInterval(activityInterval);
-                clearInterval(statsInterval);
-                if (messageSubscription) supabase.removeChannel(messageSubscription);
-            };
-        }
-
-        // Supabase Presence for Online Status Tracking
-        let presenceChannel: any;
-        if (isOpen) {
-            presenceChannel = supabase.channel('online-users', {
-                config: {
-                    presence: {
-                        key: 'admin',
-                    },
-                },
-            });
-
-            presenceChannel
-                .on('presence', { event: 'sync' }, () => {
-                    const state = presenceChannel.presenceState();
-                    const onlineIds = new Set(Object.keys(state));
-                    console.log("Online Users Sync:", onlineIds); // Debug
-                    setOnlineUsers(onlineIds);
-
-                    // Update active count in stats instantly
-                    setStats(prev => ({
-                        ...prev,
-                        active: onlineIds.size
-                    }));
-                })
-                .subscribe(async (status: string) => {
-                    if (status === 'SUBSCRIBED') {
-                        await presenceChannel.track({
-                            user_id: 'admin',
-                            online_at: new Date().toISOString(),
-                        });
-                    }
-                });
-        }
-
         return () => {
             document.body.style.overflow = 'unset';
-            if (messageSubscription) supabase.removeChannel(messageSubscription);
-            if (presenceChannel) supabase.removeChannel(presenceChannel);
+        };
+    }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        fetchAdminData();
+
+        // Realtime Messages Subscription
+        const messageChannel = supabase
+            .channel(`admin-messages-${selectedClient?.id || 'all'}`)
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'messages'
+            }, (payload) => {
+                if (selectedClient && (payload.new.sender_id === selectedClient.id || payload.new.receiver_id === selectedClient.id)) {
+                    setMessages(prev => {
+                        const exists = prev.some(m => m.id === payload.new.id);
+                        if (exists) return prev;
+                        return [...prev, payload.new];
+                    });
+                }
+            })
+            .subscribe();
+
+        // Presence & Activity
+        const presenceChannel = supabase.channel('online-users', {
+            config: { presence: { key: 'admin' } },
+        });
+
+        presenceChannel
+            .on('presence', { event: 'sync' }, () => {
+                const state = presenceChannel.presenceState();
+                const onlineIds = new Set(Object.keys(state));
+                setOnlineUsers(onlineIds);
+                setStats(prev => ({ ...prev, active: onlineIds.size }));
+            })
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await presenceChannel.track({
+                        user_id: 'admin',
+                        online_at: new Date().toISOString(),
+                    });
+                }
+            });
+
+        const updateActivity = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                await supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', user.id);
+            }
+        };
+        updateActivity();
+        const activityInterval = setInterval(updateActivity, 30000);
+        const statsInterval = setInterval(fetchAdminData, 60000);
+
+        return () => {
+            supabase.removeChannel(messageChannel);
+            supabase.removeChannel(presenceChannel);
+            clearInterval(activityInterval);
+            clearInterval(statsInterval);
         };
     }, [isOpen, selectedClient?.id]);
 
+    // Separate useEffect for layout/scroll logic to ensure DOM is ready
     useEffect(() => {
-        // Auto-scroll to details on mobile when a client is selected
         if (selectedClient && window.innerWidth < 1024 && detailsRef.current) {
-            // Use a small timeout to ensure the DOM has rendered the new content
             const scrollTimeout = setTimeout(() => {
-                const element = detailsRef.current;
-                if (element) {
-                    // Try to scroll the parent container (the modal)
-                    const container = element.closest('.overflow-y-auto');
-                    if (container) {
-                        const top = element.offsetTop;
-                        container.scrollTo({ top, behavior: 'smooth' });
-                    } else {
-                        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                }
-            }, 150);
+                detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
             return () => clearTimeout(scrollTimeout);
         }
     }, [selectedClient?.id]);
@@ -218,6 +180,8 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             .order('created_at', { ascending: false });
 
         if (results) setTestResults(results);
+
+        // Auto-scroll to details on mobile when a client is selected
     };
 
     const sendAdminMessage = async () => {
@@ -355,7 +319,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                className="relative w-full lg:max-w-7xl bg-white dark:bg-zinc-900 glass-strong rounded-none md:rounded-[2.5rem] shadow-elevated h-full md:h-[95vh] lg:h-[85vh] flex flex-col lg:flex-row overflow-hidden z-10"
+                className="relative w-full lg:max-w-7xl bg-white dark:bg-zinc-900 glass-strong rounded-none md:rounded-[2.5rem] shadow-elevated h-full md:h-[95vh] lg:h-[85vh] flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden z-10"
             >
                 <button
                     onClick={onClose}
@@ -364,8 +328,8 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                     <X size={24} />
                 </button>
 
-                {/* Left Sidebar - Scrollable independently on desktop */}
-                <div className="w-full lg:w-80 border-r border-border p-6 lg:p-8 flex flex-col bg-accent/10 overflow-y-auto flex-shrink-0">
+                {/* Left Sidebar - Scrollable independently on desktop, flows naturally on mobile */}
+                <div className="w-full lg:w-80 border-r border-border p-6 lg:p-8 flex flex-col bg-accent/10 overflow-visible lg:overflow-y-auto flex-shrink-0">
                     <div className="flex items-center gap-3 mb-10">
                         <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg">
                             <Users size={24} />
@@ -448,7 +412,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                 <div
                     ref={detailsRef}
                     id="client-details-section"
-                    className="flex-1 flex flex-col bg-white dark:bg-zinc-900 transition-colors overflow-y-auto lg:overflow-hidden"
+                    className="flex-1 flex flex-col bg-white dark:bg-zinc-900 transition-colors overflow-visible lg:overflow-hidden"
                 >
                     {selectedClient ? (
                         <>
