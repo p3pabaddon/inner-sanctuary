@@ -19,7 +19,8 @@ import {
     Frown,
     CloudRain,
     Zap,
-    ChevronDown
+    ChevronDown,
+    Menu
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -543,10 +544,15 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                                         ].find(item => item.id === activeTab);
                                         return active ? (
                                             <>
-                                                <active.icon size={20} className="text-primary" />
+                                                <Menu size={20} className="text-primary" />
                                                 <span className="font-display font-bold text-foreground">{active.label}</span>
                                             </>
-                                        ) : null;
+                                        ) : (
+                                            <div className="flex items-center gap-3">
+                                                <Menu size={20} className="text-primary" />
+                                                <span className="font-display font-bold text-foreground">Menü</span>
+                                            </div>
+                                        );
                                     })()}
                                 </div>
                                 <motion.div
