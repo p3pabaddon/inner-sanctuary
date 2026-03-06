@@ -35,9 +35,20 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     const [testResults, setTestResults] = useState<any[]>([]);
 
     useEffect(() => {
+        // Body scroll lock
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+
         if (isOpen) {
             fetchAdminData();
         }
+
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
     }, [isOpen]);
 
     const fetchAdminData = async () => {
@@ -232,10 +243,10 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                className="relative w-full max-w-7xl bg-white/90 dark:bg-zinc-900/90 glass-strong rounded-[2.5rem] shadow-elevated overflow-hidden flex h-[85vh]"
+                className="relative w-full max-w-7xl bg-white/90 dark:bg-zinc-900/90 glass-strong rounded-[2.5rem] shadow-elevated overflow-hidden flex flex-col lg:flex-row h-full max-h-[95vh] lg:h-[85vh]"
             >
                 {/* Admin Sidebar */}
-                <div className="w-80 border-r border-border p-8 flex flex-col bg-accent/10">
+                <div className="w-full lg:w-80 border-r border-border p-6 lg:p-8 flex flex-col bg-accent/10 overflow-y-auto lg:overflow-visible max-h-[40vh] lg:max-h-full">
                     <div className="flex items-center gap-3 mb-10">
                         <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg">
                             <Users size={24} />
@@ -345,9 +356,9 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                 </div>
                             </header>
 
-                            <div className="flex-1 flex overflow-hidden">
+                            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
                                 {/* Chat Area */}
-                                <div className="w-1/2 border-r border-border flex flex-col p-8">
+                                <div className="w-full lg:w-1/2 border-r border-border flex flex-col p-6 lg:p-8 overflow-y-auto lg:overflow-hidden order-2 lg:order-1">
                                     <h4 className="font-display font-bold text-lg mb-6 flex items-center gap-2">
                                         <MessageSquare size={20} className="text-primary" /> Mesajlaşma
                                     </h4>
@@ -382,7 +393,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                 </div>
 
                                 {/* Activity & Files */}
-                                <div className="flex-1 p-8 overflow-y-auto space-y-8">
+                                <div className="flex-1 p-6 lg:p-8 overflow-y-auto space-y-8 order-1 lg:order-2">
                                     <AnimatePresence>
                                         {isAddingNote && (
                                             <motion.div

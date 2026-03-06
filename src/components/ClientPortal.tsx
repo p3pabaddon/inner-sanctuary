@@ -42,6 +42,13 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
     });
 
     useEffect(() => {
+        // Body scroll lock
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+
         // Check session on mount
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session) {
@@ -62,8 +69,11 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
             }
         });
 
-        return () => subscription.unsubscribe();
-    }, []);
+        return () => {
+            document.body.style.overflow = 'unset';
+            subscription.unsubscribe();
+        };
+    }, [isOpen]);
 
     const fetchPortalData = async (userId: string) => {
         setLoading(true);
@@ -234,7 +244,7 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                className="relative w-full max-w-5xl bg-gradient-to-br from-white/90 dark:from-zinc-900/90 via-accent/30 dark:via-zinc-800/30 to-white/80 dark:to-zinc-900/80 glass-strong rounded-[2.5rem] shadow-elevated overflow-hidden flex flex-col md:flex-row min-h-[650px]"
+                className="relative w-full max-w-5xl bg-gradient-to-br from-white/90 dark:from-zinc-900/90 via-accent/30 dark:via-zinc-800/30 to-white/80 dark:to-zinc-900/80 glass-strong rounded-[2.5rem] shadow-elevated overflow-hidden flex flex-col md:flex-row h-full max-h-[90vh] md:min-h-[650px]"
             >
                 <button
                     onClick={onClose}
@@ -401,7 +411,7 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                         </div>
 
                         {/* Content Area */}
-                        <div className="flex-1 p-8 md:p-12 overflow-y-auto max-h-[650px] bg-white/10 dark:bg-zinc-900/10">
+                        <div className="flex-1 p-6 md:p-12 overflow-y-auto bg-white/10 dark:bg-zinc-900/10">
                             <AnimatePresence mode="wait">
                                 {activeTab === "dashboard" && (
                                     <motion.div
