@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const navLinks = [
-  { label: "Hakkımda", href: "#about" },
-  { label: "Hizmetler", href: "#services" },
-  { label: "Yöntemler", href: "#methods" },
-  { label: "Öz-Değerlendirme", href: "#assessment" },
-  { label: "Yorumlar", href: "#testimonials" },
-  { label: "Etik & Güven", href: "#compliance" },
-  { label: "Makaleler", href: "#blog" },
-  { label: "SSS", href: "#faq" },
-  { label: "İletişim", href: "#contact" },
+  { label: "Hakkımda", href: "/#about" },
+  { label: "Hizmetler", href: "/#services" },
+  { label: "Yöntemler", href: "/#methods" },
+  { label: "Öz-Değerlendirme", href: "/#assessment" },
+  { label: "Yorumlar", href: "/#testimonials" },
+  { label: "Etik & Güven", href: "/#compliance" },
+  { label: "Makaleler", href: "/blog" },
+  { label: "SSS", href: "/#faq" },
+  { label: "İletişim", href: "/#contact" },
 ];
 
 const Navbar = ({ onPortalOpen }: { onPortalOpen: () => void }) => {
@@ -41,13 +42,23 @@ const Navbar = ({ onPortalOpen }: { onPortalOpen: () => void }) => {
         <div className="hidden md:flex items-center gap-6">
           <div className="flex items-center gap-8 mr-4">
             {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-sm font-body font-medium text-muted-foreground hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
-              >
-                {link.label}
-              </a>
+              link.href.startsWith("/#") ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm font-body font-medium text-muted-foreground hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className="text-sm font-body font-medium text-muted-foreground hover:text-primary transition-colors duration-300 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+                >
+                  {link.label}
+                </Link>
+              )
             ))}
           </div>
           <div className="flex items-center gap-4">

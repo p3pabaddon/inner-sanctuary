@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import ScrollProgress from "@/components/ScrollProgress";
 import { Moon, Sun } from "lucide-react";
 import { motion } from "framer-motion";
@@ -22,6 +23,13 @@ import { supabase } from "@/lib/supabase";
 
 const Index = () => {
   const [isPortalOpen, setIsPortalOpen] = useState(false);
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('portal') === 'open') {
+      setIsPortalOpen(true);
+    }
+  }, [searchParams]);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [theme, setTheme] = useState(() => {
