@@ -24,6 +24,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     const [clients, setClients] = useState<any[]>([]);
     const [selectedClient, setSelectedClient] = useState<any>(null);
     const [stats, setStats] = useState({ total: 0, active: 0 });
+    const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [adminMessage, setAdminMessage] = useState("");
@@ -95,9 +96,31 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             };
         }
 
+        // Supabase Presence for Online Status Tracking
+        let presenceChannel: any;
+        if (isOpen) {
+            presenceChannel = supabase.channel('online-users');
+
+            presenceChannel
+                .on('presence', { event: 'sync' }, () => {
+                    const state = presenceChannel.presenceState();
+                    const onlineIds = new Set(Object.keys(state));
+                    setOnlineUsers(onlineIds);
+
+                    // Update active count in stats instantly
+                    setStats(prev => ({
+                        ...prev,
+                        active: onlineIds.size > 0 ? Array.from(onlineIds).filter(id => id !== 'admin').length : 0
+                        // Note: ideally we filter out admins if they use the same channel
+                    }));
+                })
+                .subscribe();
+        }
+
         return () => {
             document.body.style.overflow = 'unset';
             if (messageSubscription) supabase.removeChannel(messageSubscription);
+            if (presenceChannel) supabase.removeChannel(presenceChannel);
         };
     }, [isOpen, selectedClient?.id]);
 
@@ -133,13 +156,9 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
         if (profiles) {
             setClients(profiles);
 
-            // Define active as seen in the last 5 minutes
-            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-            const activeCount = profiles.filter(p => p.last_seen && p.last_seen > fiveMinutesAgo).length;
-
             setStats({
                 total: profiles.length,
-                active: activeCount
+                active: onlineUsers.size // Fallback to current presence
             });
         }
         setLoading(false);
@@ -377,7 +396,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                     <div className="text-left flex flex-col">
                                         <div className="flex items-center gap-2">
                                             <div className="font-display font-bold text-sm">{client.full_name || "İsimsiz"}</div>
-                                            {client.last_seen && new Date(client.last_seen) > new Date(Date.now() - 5 * 60 * 1000) && (
+                                            {onlineUsers.has(client.id) && (
                                                 <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse" title="Çevrimiçi" />
                                             )}
                                         </div>
@@ -385,7 +404,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                             <div className={`text-[10px] ${selectedClient?.id === client.id ? "text-white/70" : "text-muted-foreground"}`}>
                                                 %{client.progress || 0} Gelişim
                                             </div>
-                                            {client.last_seen && new Date(client.last_seen) > new Date(Date.now() - 5 * 60 * 1000) && (
+                                            {onlineUsers.has(client.id) && (
                                                 <span className={`text-[8px] font-bold uppercase tracking-tighter ${selectedClient?.id === client.id ? "text-white/50" : "text-green-500/80"}`}>
                                                     Çevrimiçi
                                                 </span>

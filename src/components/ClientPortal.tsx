@@ -11,7 +11,8 @@ import {
     LogOut,
     ChevronRight,
     MessageSquare,
-    RefreshCcw
+    RefreshCcw,
+    Circle
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -106,10 +107,33 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
             activityInterval = setInterval(updateActivity, 30000); // Every 30 seconds
         }
 
+        // Supabase Presence for Online Status
+        let presenceChannel: any;
+        if (isLoggedIn && user) {
+            presenceChannel = supabase.channel('online-users', {
+                config: {
+                    presence: {
+                        key: user.id,
+                    },
+                },
+            });
+
+            presenceChannel
+                .subscribe(async (status: string) => {
+                    if (status === 'SUBSCRIBED') {
+                        await presenceChannel.track({
+                            user_id: user.id,
+                            online_at: new Date().toISOString(),
+                        });
+                    }
+                });
+        }
+
         return () => {
             document.body.style.overflow = 'unset';
             authSubscription.unsubscribe();
             if (messageSubscription) supabase.removeChannel(messageSubscription);
+            if (presenceChannel) supabase.removeChannel(presenceChannel);
             if (activityInterval) clearInterval(activityInterval);
         };
     }, [isOpen, isLoggedIn, user?.id]);
