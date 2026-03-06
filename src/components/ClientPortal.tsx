@@ -18,7 +18,8 @@ import {
     Meh,
     Frown,
     CloudRain,
-    Zap
+    Zap,
+    ChevronDown
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -51,6 +52,7 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
     const [selectedMood, setSelectedMood] = useState<string | null>(null);
     const [moodNote, setMoodNote] = useState("");
     const [isLoggingMood, setIsLoggingMood] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         // Body scroll lock
@@ -525,8 +527,82 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                     </div>
                 ) : (
                     <>
-                        {/* Sidebar */}
-                        <div className="w-full md:w-72 bg-white/30 dark:bg-zinc-900/30 backdrop-blur-sm p-6 md:p-8 border-b md:border-b-0 md:border-r border-white/20 dark:border-zinc-800 flex flex-col flex-shrink-0">
+                        {/* Mobile Dropdown Navigation */}
+                        <div className="md:hidden w-full bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md p-4 border-b border-white/20 dark:border-zinc-800 sticky top-0 z-50">
+                            <button
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                className="w-full flex items-center justify-between px-5 py-4 bg-white dark:bg-zinc-800 rounded-2xl border border-white/50 dark:border-zinc-700 shadow-soft h-14"
+                            >
+                                <div className="flex items-center gap-3">
+                                    {(() => {
+                                        const active = [
+                                            { id: "dashboard", icon: TrendingUp, label: "Genel Bakış" },
+                                            { id: "documents", icon: FileText, label: "Dosyalarım" },
+                                            { id: "sessions", icon: Calendar, label: "Randevularım" },
+                                            { id: "messages", icon: MessageSquare, label: "Mesajlar" }
+                                        ].find(item => item.id === activeTab);
+                                        return active ? (
+                                            <>
+                                                <active.icon size={20} className="text-primary" />
+                                                <span className="font-display font-bold text-foreground">{active.label}</span>
+                                            </>
+                                        ) : null;
+                                    })()}
+                                </div>
+                                <motion.div
+                                    animate={{ rotate: isMobileMenuOpen ? 180 : 0 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <ChevronDown size={20} className="text-muted-foreground" />
+                                </motion.div>
+                            </button>
+
+                            <AnimatePresence>
+                                {isMobileMenuOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                                        animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
+                                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                                        className="overflow-hidden bg-white/60 dark:bg-zinc-800/60 backdrop-blur-lg rounded-[2rem] border border-white/40 dark:border-zinc-700/40 shadow-xl"
+                                    >
+                                        <div className="p-3 space-y-1">
+                                            {[
+                                                { id: "dashboard", icon: TrendingUp, label: "Genel Bakış" },
+                                                { id: "documents", icon: FileText, label: "Dosyalarım" },
+                                                { id: "sessions", icon: Calendar, label: "Randevularım" },
+                                                { id: "messages", icon: MessageSquare, label: "Mesajlar" }
+                                            ].map((item) => (
+                                                <button
+                                                    key={item.id}
+                                                    onClick={() => {
+                                                        setActiveTab(item.id);
+                                                        setIsMobileMenuOpen(false);
+                                                    }}
+                                                    className={`w-full flex items-center gap-4 px-5 py-4 rounded-xl transition-all duration-300 font-body text-sm ${activeTab === item.id
+                                                        ? "bg-white dark:bg-zinc-800 text-primary shadow-sm font-bold"
+                                                        : "text-muted-foreground hover:bg-white/40 dark:hover:bg-zinc-700/40"
+                                                        }`}
+                                                >
+                                                    <item.icon size={18} className={activeTab === item.id ? "text-primary" : "text-muted-foreground"} />
+                                                    {item.label}
+                                                </button>
+                                            ))}
+                                            <div className="pt-2 mt-2 border-t border-white/20 dark:border-zinc-700/20">
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="w-full flex items-center gap-4 px-5 py-4 rounded-xl text-muted-foreground hover:text-destructive transition-colors font-body text-sm"
+                                                >
+                                                    <LogOut size={18} /> Çıkış Yap
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Sidebar (Desktop Only) */}
+                        <div className="hidden md:flex w-72 bg-white/30 dark:bg-zinc-900/30 backdrop-blur-sm p-8 border-r border-white/20 dark:border-zinc-800 flex-col flex-shrink-0">
                             <div className="flex items-center gap-4 mb-12">
                                 <div className="w-14 h-14 bg-gradient-to-tr from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center text-primary border border-white/50 dark:border-zinc-700/50 shadow-sm transition-transform duration-500 hover:rotate-6">
                                     <User size={28} />
