@@ -21,7 +21,8 @@ import {
     Frown,
     CloudRain,
     Zap,
-    TrendingUp
+    TrendingUp,
+    Video
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -491,6 +492,12 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                             {isUploading ? "Yükleniyor..." : "Dosya Yükle"}
                                         </label>
                                     </div>
+                                    <button
+                                        onClick={() => window.open('https://zoom.us/start/videomeeting', '_blank')}
+                                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#2D8CFF] text-white hover:shadow-lg transition-all font-body text-sm"
+                                    >
+                                        <Video size={18} /> Zoom Başlat
+                                    </button>
                                 </div>
                             </header>
 
