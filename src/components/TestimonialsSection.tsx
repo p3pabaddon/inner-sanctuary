@@ -38,7 +38,7 @@ const TestimonialsSection = () => {
   const next = () => setCurrent((c) => (c === testimonials.length - 1 ? 0 : c + 1));
 
   return (
-    <section id="testimonials" className="py-32 bg-accent/50 relative noise-overlay" ref={ref}>
+    <section id="testimonials" className="py-32 bg-accent/50 dark:bg-accent/10 relative noise-overlay" ref={ref}>
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -59,11 +59,11 @@ const TestimonialsSection = () => {
         >
           <div className="glass-strong rounded-3xl p-8 md:p-12 relative">
             <Quote className="w-12 h-12 text-primary/15 absolute top-8 left-8" />
-            
+
             <div className="relative z-10">
               <div className="flex gap-1 mb-6 justify-center">
                 {[...Array(testimonials[current].rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-secondary text-secondary" />
+                  <Star key={i} className="w-5 h-5 fill-secondary dark:fill-primary text-secondary dark:text-primary transition-colors" />
                 ))}
               </div>
 
@@ -99,9 +99,8 @@ const TestimonialsSection = () => {
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                    i === current ? "bg-primary w-8" : "bg-primary/20"
-                  }`}
+                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${i === current ? "bg-primary w-8" : "bg-primary/20"
+                    }`}
                 />
               ))}
             </div>

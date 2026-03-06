@@ -1,6 +1,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
-import { Calendar, Clock, User, Mail, ArrowRight, Check } from "lucide-react";
+import { Calendar, Clock, User, Mail, ArrowRight, Check, Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const therapyTypes = ["Bireysel Terapi", "Çift Terapisi", "Kaygı Tedavisi", "Depresyon Terapisi", "Online Terapi"];
 const timeSlots = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00"];
@@ -14,6 +15,7 @@ const AppointmentSection = () => {
   const [selectedTime, setSelectedTime] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const steps = ["Terapi Türü", "Tarih ve Saat", "Bilgileriniz", "Onay"];
 
@@ -22,6 +24,36 @@ const AppointmentSection = () => {
     if (step === 1) return !!selectedDate && !!selectedTime;
     if (step === 2) return !!name && !!email;
     return true;
+  };
+
+  const handleNext = async () => {
+    if (step === 2) {
+      setLoading(true);
+      try {
+        const { error } = await supabase
+          .from('appointments')
+          .insert([
+            {
+              full_name: name,
+              email: email,
+              type: selectedType,
+              date: selectedDate,
+              time: selectedTime,
+              status: 'Gelecek'
+            }
+          ]);
+
+        if (error) throw error;
+        setStep(3);
+      } catch (err) {
+        console.error("Randevu kaydedilemedi:", err);
+        alert("Randevu kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.");
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      setStep(step + 1);
+    }
   };
 
   // Generate next 14 days
@@ -56,11 +88,10 @@ const AppointmentSection = () => {
             {steps.map((s, i) => (
               <div key={s} className="flex items-center gap-2">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-body font-medium transition-all duration-300 ${
-                    i <= step
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted text-muted-foreground"
-                  }`}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-body font-medium transition-all duration-300 ${i <= step
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                    }`}
                 >
                   {i < step ? <Check className="w-4 h-4" /> : i + 1}
                 </div>
@@ -80,11 +111,10 @@ const AppointmentSection = () => {
                   <button
                     key={type}
                     onClick={() => setSelectedType(type)}
-                    className={`w-full text-left p-4 rounded-xl font-body transition-all duration-300 ${
-                      selectedType === type
-                        ? "bg-primary/10 border-2 border-primary/30 text-foreground"
-                        : "glass hover:shadow-soft text-foreground"
-                    }`}
+                    className={`w-full text-left p-4 rounded-xl font-body transition-all duration-300 ${selectedType === type
+                      ? "bg-primary/10 dark:bg-primary/20 border-2 border-primary/30 dark:border-primary/50 text-foreground"
+                      : "glass hover:shadow-soft text-foreground"
+                      }`}
                   >
                     {type}
                   </button>
@@ -106,11 +136,10 @@ const AppointmentSection = () => {
                         <button
                           key={key}
                           onClick={() => setSelectedDate(key)}
-                          className={`p-3 rounded-xl text-center font-body text-sm transition-all duration-300 ${
-                            selectedDate === key
-                              ? "bg-primary text-primary-foreground"
-                              : "glass hover:shadow-soft text-foreground"
-                          }`}
+                          className={`p-3 rounded-xl text-center font-body text-sm transition-all duration-300 ${selectedDate === key
+                            ? "bg-primary text-primary-foreground"
+                            : "glass hover:shadow-soft text-foreground"
+                            }`}
                         >
                           <div className="font-medium">{d.toLocaleDateString("tr-TR", { weekday: "short" })}</div>
                           <div className="text-lg font-semibold">{d.getDate()}</div>
@@ -128,11 +157,10 @@ const AppointmentSection = () => {
                       <button
                         key={time}
                         onClick={() => setSelectedTime(time)}
-                        className={`p-3 rounded-xl font-body text-sm transition-all duration-300 ${
-                          selectedTime === time
-                            ? "bg-primary text-primary-foreground"
-                            : "glass hover:shadow-soft text-foreground"
-                        }`}
+                        className={`p-3 rounded-xl font-body text-sm transition-all duration-300 ${selectedTime === time
+                          ? "bg-primary text-primary-foreground"
+                          : "glass hover:shadow-soft text-foreground"
+                          }`}
                       >
                         {time}
                       </button>
@@ -200,11 +228,17 @@ const AppointmentSection = () => {
                   <div />
                 )}
                 <button
-                  onClick={() => setStep(step + 1)}
-                  disabled={!canProceed()}
+                  onClick={handleNext}
+                  disabled={!canProceed() || loading}
                   className="px-8 py-3 rounded-full bg-primary text-primary-foreground font-body font-medium flex items-center gap-2 hover:shadow-elevated transition-all duration-300 hover:-translate-y-0.5 disabled:opacity-40 disabled:hover:translate-y-0"
                 >
-                  {step === 2 ? "Onayla" : "İleri"} <ArrowRight className="w-4 h-4" />
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      {step === 2 ? "Onayla" : "İleri"} <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
               </div>
             )}
