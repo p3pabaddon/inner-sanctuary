@@ -1,10 +1,19 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 
 const ContactSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
+
+  const contactInfos = [
+    { icon: MapPin, label: "Adres", value: "Valikonağı Cd. No: 45, Kat: 2\nNişantaşı, İstanbul" },
+    { icon: Phone, label: "Telefon", value: "+90 (212) 555 78 90" },
+    { icon: Mail, label: "E-posta", value: "bilgi@dengeterapi.com.tr" },
+  ];
 
   return (
     <section id="contact" className="py-32 bg-accent/50 relative noise-overlay" ref={ref}>
@@ -27,34 +36,32 @@ const ContactSection = () => {
             transition={{ delay: 0.2 }}
             className="space-y-8"
           >
-            {[
-              { icon: MapPin, label: "Adres", value: "Wellness Sokak No: 123, Kat: 4\nİstanbul, Türkiye 34000" },
-              { icon: Phone, label: "Telefon", value: "+90 (212) 555-0184" },
-              { icon: Mail, label: "E-posta", value: "info@mindcare.com" },
-            ].map((item) => (
-              <div key={item.label} className="flex gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <item.icon className="w-5 h-5 text-primary" />
+            <div className="space-y-6">
+              {contactInfos.map((item, index) => (
+                <div key={index} className="flex gap-4 p-4 rounded-2xl bg-white/50 border border-white/50 shadow-sm">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <item.icon className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="font-body font-semibold text-foreground">{item.label}</div>
+                    <div className="text-muted-foreground font-body whitespace-pre-line">{item.value}</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-body font-semibold text-foreground">{item.label}</div>
-                  <div className="text-muted-foreground font-body whitespace-pre-line">{item.value}</div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
 
             <div className="flex gap-3 pt-4">
               <a
-                href="https://wa.me/902125550184"
+                href="https://wa.me/905000000000"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-12 h-12 rounded-full bg-[#25D366]/10 flex items-center justify-center hover:bg-[#25D366]/20 transition-colors duration-300 hover:-translate-y-1 hover:shadow-soft"
+                className="w-12 h-12 rounded-full bg-[#25D366]/10 flex items-center justify-center hover:bg-[#25D366]/20 transition-colors duration-300 hover:-translate-y-1"
               >
                 <MessageCircle className="w-5 h-5 text-[#25D366]" />
               </a>
               <a
-                href="mailto:info@mindcare.com"
-                className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors duration-300 hover:-translate-y-1 hover:shadow-soft"
+                href="mailto:bilgi@dengeterapi.com.tr"
+                className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors duration-300 hover:-translate-y-1"
               >
                 <Mail className="w-5 h-5 text-primary" />
               </a>
@@ -65,18 +72,17 @@ const ContactSection = () => {
             initial={{ opacity: 0, x: 40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ delay: 0.4 }}
-            className="rounded-2xl overflow-hidden shadow-card h-80 md:h-auto"
+            className="bg-white/80 p-8 rounded-3xl border border-white/50 shadow-sm backdrop-blur-sm"
           >
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3009.0977!2d28.9784!3d41.0082!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDAwJzI5LjUiTiAyOMKwNTgnNDIuMiJF!5e0!3m2!1str!2str!4v1600000000000!5m2!1str!2str"
-              width="100%"
-              height="100%"
-              style={{ border: 0, minHeight: 320 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Ofis Konumu"
-            />
+            <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+              <div className="grid md:grid-cols-2 gap-4">
+                <Input placeholder="Adınız" className="bg-white/50 border-white/30" />
+                <Input placeholder="E-posta" type="email" className="bg-white/50 border-white/30" />
+              </div>
+              <Input placeholder="Konu" className="bg-white/50 border-white/30" />
+              <Textarea placeholder="Mesajınız..." className="min-h-[120px] bg-white/50 border-white/30" />
+              <Button className="w-full h-12 text-lg font-medium">Mesaj Gönder</Button>
+            </form>
           </motion.div>
         </div>
       </div>

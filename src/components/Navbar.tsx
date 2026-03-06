@@ -34,7 +34,7 @@ const Navbar = ({ onPortalOpen }: { onPortalOpen: () => void }) => {
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
         <a href="#" className="font-highlight text-2xl text-primary tracking-wide">
-          MindCare
+          Denge Terapi
         </a>
 
         {/* Desktop */}

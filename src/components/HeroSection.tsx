@@ -31,7 +31,7 @@ const HeroSection = () => {
     return () => window.removeEventListener("mousemove", handleMouse);
   }, []);
 
-  const words = ["Zihniniz", "İlgiyi", "Hak", "Ediyor"];
+  const words = ["Ruhsal", "Dengenizi", "Yeniden", "Keşfedin"];
 
   return (
     <section
@@ -73,7 +73,7 @@ const HeroSection = () => {
               transition={{ delay: 0.3 }}
               className="inline-block px-4 py-1.5 rounded-full glass text-sm font-body text-primary mb-8"
             >
-              Klinik Psikoloji Pratiği
+              Profesyonel Psikolojik Danışmanlık
             </motion.div>
 
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-bold leading-[0.95] mb-8">
@@ -96,7 +96,7 @@ const HeroSection = () => {
               transition={{ delay: 1.2, duration: 0.8 }}
               className="text-lg md:text-xl text-muted-foreground font-body max-w-lg mb-10 leading-relaxed"
             >
-              Güvenli ve destekleyici bir ortamda profesyonel psikolojik danışmanlık. İç huzura giden yolculuğunuza başlayın.
+              Güvenli ve destekleyici bir ortamda profesyonel psikolojik danışmanlık. İç huzura giden yolculuğunuza Denge Terapi ile başlayın.
             </motion.p>
 
             <motion.div
@@ -135,8 +135,8 @@ const HeroSection = () => {
             <div className="relative animate-float">
               <div className="absolute -inset-4 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-[2rem] blur-2xl" />
               <img
-                src={heroImage}
-                alt="Dr. Ayşe Yılmaz - Klinik Psikolog"
+                src="https://images.unsplash.com/photo-1527689368864-3a821dbccc34?q=80&w=2070&auto=format&fit=crop"
+                alt="Denge Terapi - Klinik Psikoloji"
                 className="relative rounded-[2rem] shadow-elevated w-full object-cover aspect-[16/10]"
               />
               {/* Floating badge */}

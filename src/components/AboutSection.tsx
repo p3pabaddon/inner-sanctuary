@@ -21,8 +21,8 @@ const AboutSection = () => {
             <div className="absolute -inset-6 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-[2rem]" />
             <div className="relative overflow-hidden rounded-[2rem]">
               <img
-                src={portraitImage}
-                alt="Dr. Ayşe Yılmaz"
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2070&auto=format&fit=crop"
+                alt="Uzm. Kln. Psk. Ayşe Yılmaz"
                 className="w-full object-cover aspect-square"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />
@@ -37,7 +37,7 @@ const AboutSection = () => {
               transition={{ delay: 0.2 }}
               className="text-sm font-body font-semibold text-secondary uppercase tracking-widest"
             >
-              Hakkımda
+              Hakkımızda
             </motion.span>
 
             <motion.h2
@@ -46,7 +46,7 @@ const AboutSection = () => {
               transition={{ delay: 0.3, duration: 0.8 }}
               className="text-4xl md:text-5xl font-display font-bold text-foreground mt-4 mb-6"
             >
-              Dr. Ayşe Yılmaz
+              Uzm. Kln. Psk. Ayşe Yılmaz
             </motion.h2>
 
             <motion.p
@@ -55,7 +55,7 @@ const AboutSection = () => {
               transition={{ delay: 0.5 }}
               className="text-lg text-primary font-highlight italic mb-6"
             >
-              Klinik Psikolog
+              Kurucu & Klinik Psikolog
             </motion.p>
 
             {[
