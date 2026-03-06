@@ -243,10 +243,17 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                className="relative w-full max-w-7xl bg-white/90 dark:bg-zinc-900/90 glass-strong rounded-[2.5rem] shadow-elevated overflow-hidden flex flex-col lg:flex-row h-full max-h-[95vh] lg:h-[85vh]"
+                className="relative w-full max-w-7xl bg-white/90 dark:bg-zinc-900/90 glass-strong rounded-[2.5rem] shadow-elevated overflow-hidden flex flex-col lg:flex-row h-full max-h-[95vh] lg:h-[85vh] z-10"
             >
+                {/* Fixed Close Button for Mobile */}
+                <button
+                    onClick={onClose}
+                    className="absolute top-4 right-4 z-[120] p-2 rounded-full bg-white/80 dark:bg-zinc-800/80 shadow-md md:hidden"
+                >
+                    <X size={24} className="text-foreground" />
+                </button>
                 {/* Admin Sidebar */}
-                <div className="w-full lg:w-80 border-r border-border p-6 lg:p-8 flex flex-col bg-accent/10 overflow-y-auto lg:overflow-visible max-h-[40vh] lg:max-h-full">
+                <div className="w-full lg:w-80 border-r border-border p-6 lg:p-8 flex flex-col bg-accent/10 overflow-y-auto lg:overflow-visible flex-shrink-0">
                     <div className="flex items-center gap-3 mb-10">
                         <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg">
                             <Users size={24} />
@@ -356,9 +363,9 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                 </div>
                             </header>
 
-                            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+                            <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
                                 {/* Chat Area */}
-                                <div className="w-full lg:w-1/2 border-r border-border flex flex-col p-6 lg:p-8 overflow-y-auto lg:overflow-hidden order-2 lg:order-1">
+                                <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-border flex flex-col p-6 lg:p-8 flex-shrink-0 min-h-[400px] lg:min-h-0 order-2 lg:order-1">
                                     <h4 className="font-display font-bold text-lg mb-6 flex items-center gap-2">
                                         <MessageSquare size={20} className="text-primary" /> Mesajlaşma
                                     </h4>

@@ -370,7 +370,7 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                 ) : (
                     <>
                         {/* Sidebar */}
-                        <div className="w-full md:w-72 bg-white/30 dark:bg-zinc-900/30 backdrop-blur-sm p-8 border-r border-white/20 dark:border-zinc-800 flex flex-col">
+                        <div className="w-full md:w-72 bg-white/30 dark:bg-zinc-900/30 backdrop-blur-sm p-6 md:p-8 border-b md:border-b-0 md:border-r border-white/20 dark:border-zinc-800 flex flex-col flex-shrink-0">
                             <div className="flex items-center gap-4 mb-12">
                                 <div className="w-14 h-14 bg-gradient-to-tr from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center text-primary border border-white/50 dark:border-zinc-700/50 shadow-sm transition-transform duration-500 hover:rotate-6">
                                     <User size={28} />
@@ -411,7 +411,7 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                         </div>
 
                         {/* Content Area */}
-                        <div className="flex-1 p-6 md:p-12 overflow-y-auto bg-white/10 dark:bg-zinc-900/10">
+                        <div className="flex-1 p-6 md:p-12 overflow-y-auto bg-white/10 dark:bg-zinc-900/10 min-h-0">
                             <AnimatePresence mode="wait">
                                 {activeTab === "dashboard" && (
                                     <motion.div
