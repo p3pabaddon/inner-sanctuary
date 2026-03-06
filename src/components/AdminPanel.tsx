@@ -343,7 +343,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center p-0 md:p-4">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-0 md:p-4 overflow-hidden">
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -355,17 +355,17 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                className="relative w-full lg:max-w-7xl bg-white/90 dark:bg-zinc-900/90 glass-strong rounded-none md:rounded-[2.5rem] shadow-elevated overflow-y-auto lg:overflow-hidden flex flex-col lg:flex-row h-full max-h-screen md:max-h-[95vh] lg:h-[85vh] z-10"
+                className="relative w-full lg:max-w-7xl bg-white dark:bg-zinc-900 glass-strong rounded-none md:rounded-[2.5rem] shadow-elevated h-full md:h-[95vh] lg:h-[85vh] flex flex-col lg:flex-row overflow-hidden z-10"
             >
-                {/* Fixed Close Button for Mobile - Moved inside scrollable area or kept fixed */}
                 <button
                     onClick={onClose}
                     className="fixed top-4 right-4 z-[150] p-2 rounded-full bg-primary text-white shadow-2xl md:hidden flex items-center justify-center"
                 >
                     <X size={24} />
                 </button>
-                {/* Admin Sidebar */}
-                <div className="w-full lg:w-80 border-r border-border p-6 lg:p-8 flex flex-col bg-accent/10 overflow-y-auto lg:overflow-visible flex-shrink-0">
+
+                {/* Left Sidebar - Scrollable independently on desktop */}
+                <div className="w-full lg:w-80 border-r border-border p-6 lg:p-8 flex flex-col bg-accent/10 overflow-y-auto flex-shrink-0">
                     <div className="flex items-center gap-3 mb-10">
                         <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg">
                             <Users size={24} />
@@ -448,7 +448,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                 <div
                     ref={detailsRef}
                     id="client-details-section"
-                    className="flex-1 flex flex-col bg-white dark:bg-zinc-900 transition-colors overflow-hidden"
+                    className="flex-1 flex flex-col bg-white dark:bg-zinc-900 transition-colors overflow-y-auto lg:overflow-hidden"
                 >
                     {selectedClient ? (
                         <>
@@ -491,14 +491,14 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                 </div>
                             </header>
 
-                            <div className="flex-1 flex flex-col lg:flex-row overflow-visible lg:overflow-hidden">
+                            <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
                                 {/* Chat Area */}
-                                <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-border flex flex-col p-6 lg:p-8 flex-shrink-0 min-h-[500px] lg:min-h-0 order-2 lg:order-1 outline-none">
+                                <div className="w-full lg:w-1/2 border-b lg:border-b-0 lg:border-r border-border flex flex-col p-6 lg:p-8 flex-shrink-0 min-h-[300px] lg:min-h-0 order-2 lg:order-1 outline-none bg-white dark:bg-zinc-900">
                                     <div className="flex-1 flex flex-col min-h-0">
                                         <h4 className="font-display font-bold text-lg mb-6 flex items-center gap-2">
                                             <MessageSquare size={20} className="text-primary" /> Mesajlaşma
                                         </h4>
-                                        <div className="flex-1 overflow-y-auto space-y-4 mb-6 pr-2 min-h-[400px] lg:min-h-0">
+                                        <div className="flex-1 overflow-y-auto space-y-4 mb-6 pr-2 min-h-0">
                                             {messages.map((m, i) => (
                                                 <div key={i} className={`flex ${m.sender_role === 'Specialist' ? 'justify-end' : 'justify-start'}`}>
                                                     <div className={`max-w-[85%] p-4 rounded-2xl text-sm font-body ${m.sender_role === 'Specialist'
@@ -532,7 +532,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                 </div>
 
                                 {/* Activity & Files */}
-                                <div className="flex-1 p-6 lg:p-8 overflow-y-auto space-y-8 order-1 lg:order-2">
+                                <div className="flex-1 p-6 lg:p-8 overflow-y-auto space-y-8 order-1 lg:order-2 bg-white dark:bg-zinc-900">
                                     <AnimatePresence>
                                         {isAddingNote && (
                                             <motion.div
@@ -662,7 +662,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                             </div>
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
+                        <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground p-8">
                             <div className="w-24 h-24 bg-accent/30 rounded-full flex items-center justify-center mb-6">
                                 <Users size={40} className="text-muted-foreground/50" />
                             </div>
@@ -674,7 +674,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                     )}
                 </div>
             </motion.div>
-        </div>
+        </div >
     );
 };
 
