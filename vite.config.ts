@@ -18,4 +18,11 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  preview: {
+    allowedHosts: [
+      'www.codenza.com.tr',
+      'codenza.com.tr',
+      '.onrender.com'
+    ],
+  },
 }));
