@@ -180,9 +180,24 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                 .order('created_at', { ascending: false })
                 .limit(7);
 
+            // 5. Fetch Upcoming Appointment
+            const { data: upcomingApp } = await supabase
+                .from('appointments')
+                .select('*')
+                .eq('client_id', userId)
+                .gte('date', new Date().toISOString().split('T')[0])
+                .order('date', { ascending: true })
+                .order('time', { ascending: true })
+                .limit(1)
+                .maybeSingle();
+
+            const nextSessionStr = upcomingApp
+                ? `${new Date(upcomingApp.date).toLocaleDateString('tr-TR')} saat ${upcomingApp.time.slice(0, 5)}`
+                : "Henüz planlanmadı";
+
             setDashboardData({
                 progress: profile?.progress || 0,
-                nextSession: "Henüz planlanmadı",
+                nextSession: nextSessionStr,
                 recentNotes: [],
                 documents: docs || [],
                 sessions: [],

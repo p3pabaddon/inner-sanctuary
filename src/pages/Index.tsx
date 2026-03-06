@@ -1,21 +1,14 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import ScrollProgress from "@/components/ScrollProgress";
-import { Moon, Sun } from "lucide-react";
-import { motion } from "framer-motion";
 import CursorGlow from "@/components/CursorGlow";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import ServicesSection from "@/components/ServicesSection";
 import MethodsSection from "@/components/MethodsSection";
-import AssessmentSection from "@/components/AssessmentSection";
-import TestimonialsSection from "@/components/TestimonialsSection";
-import ComplianceSection from "@/components/ComplianceSection";
 import BlogSection from "@/components/BlogSection";
 import AppointmentSection from "@/components/AppointmentSection";
-import FAQSection from "@/components/FAQSection";
-import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import AdminPanel from "@/components/AdminPanel";
 import ClientPortal from "@/components/ClientPortal";
@@ -99,8 +92,6 @@ const Index = () => {
       <Footer />
 
       <ClientPortal isOpen={isPortalOpen} onClose={() => setIsPortalOpen(false)} />
-      <AdminPanel isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
-
       <AdminPanel isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
     </div>
   );

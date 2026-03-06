@@ -25,6 +25,7 @@ import {
     Video
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
     const detailsRef = useRef<HTMLDivElement>(null);
@@ -43,6 +44,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     const [isUploading, setIsUploading] = useState(false);
     const [testResults, setTestResults] = useState<any[]>([]);
     const [moodHistory, setMoodHistory] = useState<any[]>([]);
+    const [newSession, setNewSession] = useState({ date: "", time: "", type: "Online Seans" });
 
     // Lock body scroll when panel is open
     useEffect(() => {
@@ -218,11 +220,6 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
         ]);
 
         if (!error) {
-            setMessages([...messages, {
-                text: adminMessage,
-                sender_role: 'Specialist',
-                created_at: new Date().toISOString()
-            }]);
             setAdminMessage("");
         }
     };
@@ -246,9 +243,38 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             setNotes([data[0], ...notes]);
             setNewNote({ title: "", content: "" });
             setIsAddingNote(false);
-            alert("Not başarıyla kaydedildi.");
+            toast.success("Not başarıyla kaydedildi.");
         } else {
-            alert("Not kaydedilirken bir hata oluştu: " + error?.message);
+            console.error("Note error:", error);
+            toast.error("Not kaydedilerken bir hata oluştu.");
+        }
+        setLoading(false);
+    };
+
+    const handleScheduleSession = async () => {
+        if (!newSession.date || !newSession.time || !selectedClient) return;
+
+        setLoading(true);
+        const { error } = await supabase
+            .from('appointments')
+            .insert([
+                {
+                    client_id: selectedClient.id,
+                    full_name: selectedClient.full_name,
+                    email: selectedClient.email,
+                    type: newSession.type,
+                    date: newSession.date,
+                    time: newSession.time,
+                    status: 'Gelecek'
+                }
+            ]);
+
+        if (!error) {
+            toast.success("Seans başarıyla planlandı.");
+            setNewSession({ date: "", time: "", type: "Online Seans" });
+        } else {
+            console.error("Schedule error:", error);
+            toast.error("Seans planlanırken hata oluştu.");
         }
         setLoading(false);
     };
@@ -266,9 +292,9 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 
         if (!error) {
             setNotes(notes.filter(note => note.id !== noteId));
-            alert("Not başarıyla silindi.");
+            toast.success("Not başarıyla silindi.");
         } else {
-            alert("Not silinirken bir hata oluştu: " + error?.message);
+            toast.error("Not silinirken bir hata oluştu.");
         }
         setLoading(false);
     };
@@ -329,16 +355,17 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                     }
                 ])
                 .select();
-
             if (dbError) throw dbError;
 
             if (docData) {
                 setDocuments([docData[0], ...documents]);
-                alert("Dosya başarıyla yüklendi.");
+                toast.success("Dosya başarıyla yüklendi.");
+                // Re-fetch client details to show new file
+                fetchClientDetails(selectedClient);
             }
         } catch (error: any) {
             console.error("Yükleme hatası:", error);
-            alert("Dosya yüklenirken bir hata oluştu: " + (error.message || "Bilinmeyen hata"));
+            toast.error("Dosya yüklenirken bir hata oluştu: " + (error.message || "Bilinmeyen hata"));
         } finally {
             setIsUploading(false);
         }
@@ -563,6 +590,53 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                         </div>
                                     </div>
 
+                                    {/* Seans Planlama - NEW SECTION */}
+                                    <div className="bg-primary/5 dark:bg-primary/5 p-6 rounded-[2rem] border border-primary/20">
+                                        <h4 className="font-display font-bold text-sm mb-4 flex items-center gap-2 uppercase tracking-widest text-primary">
+                                            <Calendar size={16} /> Seans Planla
+                                        </h4>
+                                        <div className="space-y-4">
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="space-y-1.5">
+                                                    <label className="text-[10px] font-bold text-muted-foreground uppercase ml-1 font-display">Tarih</label>
+                                                    <input
+                                                        type="date"
+                                                        value={newSession.date}
+                                                        onChange={(e) => setNewSession({ ...newSession, date: e.target.value })}
+                                                        className="w-full p-3 rounded-xl bg-white dark:bg-zinc-800 border border-border dark:border-zinc-700 text-sm focus:ring-2 focus:ring-primary/20 outline-none font-body text-foreground"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <label className="text-[10px] font-bold text-muted-foreground uppercase ml-1 font-display">Saat</label>
+                                                    <input
+                                                        type="time"
+                                                        value={newSession.time}
+                                                        onChange={(e) => setNewSession({ ...newSession, time: e.target.value })}
+                                                        className="w-full p-3 rounded-xl bg-white dark:bg-zinc-800 border border-border dark:border-zinc-700 text-sm focus:ring-2 focus:ring-primary/20 outline-none font-body text-foreground"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-[10px] font-bold text-muted-foreground uppercase ml-1 font-display">Seans Türü</label>
+                                                <select
+                                                    value={newSession.type}
+                                                    onChange={(e) => setNewSession({ ...newSession, type: e.target.value })}
+                                                    className="w-full p-3 rounded-xl bg-white dark:bg-zinc-800 border border-border dark:border-zinc-700 text-sm focus:ring-2 focus:ring-primary/20 outline-none font-body text-foreground"
+                                                >
+                                                    <option>Online Seans</option>
+                                                    <option>Yüz Yüze Seans</option>
+                                                    <option>Değerlendirme Görüşmesi</option>
+                                                </select>
+                                            </div>
+                                            <button
+                                                onClick={handleScheduleSession}
+                                                className="w-full py-3 rounded-xl bg-primary text-white font-display font-bold text-sm hover:shadow-lg transition-all active:scale-95"
+                                            >
+                                                Seansı Kaydet
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     <AnimatePresence>
                                         {isAddingNote && (
                                             <motion.div
@@ -707,5 +781,6 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
         </div >
     );
 };
+
 
 export default AdminPanel;
