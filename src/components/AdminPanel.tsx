@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Users,
@@ -20,6 +20,7 @@ import {
 import { supabase } from "@/lib/supabase";
 
 const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+    const detailsRef = useRef<HTMLDivElement>(null);
     const [clients, setClients] = useState<any[]>([]);
     const [selectedClient, setSelectedClient] = useState<any>(null);
     const [stats, setStats] = useState({ total: 0, active: 0 });
@@ -106,6 +107,11 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             .order('created_at', { ascending: false });
 
         if (results) setTestResults(results);
+
+        // Auto-scroll to details on mobile
+        if (window.innerWidth < 1024 && detailsRef.current) {
+            detailsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     };
 
     const sendAdminMessage = async () => {
@@ -321,7 +327,10 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                 </div>
 
                 {/* Main Content Detail */}
-                <div className="flex-1 flex flex-col bg-white dark:bg-zinc-900 transition-colors overflow-hidden">
+                <div
+                    ref={detailsRef}
+                    className="flex-1 flex flex-col bg-white dark:bg-zinc-900 transition-colors overflow-hidden"
+                >
                     {selectedClient ? (
                         <>
                             <header className="p-4 md:p-8 border-b border-border dark:border-zinc-800 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md gap-4">
