@@ -30,12 +30,15 @@ import {
     HardDrive,
     Search as SearchIcon,
     Globe,
-    CheckCircle2
+    CheckCircle2,
+    LayoutDashboard
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+    const navigate = useNavigate();
     const detailsRef = useRef<HTMLDivElement>(null);
     const [clients, setClients] = useState<any[]>([]);
     const [selectedClient, setSelectedClient] = useState<any>(null);
@@ -588,6 +591,16 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                 <div className="font-display font-bold text-sm">Sistem Sağlığı</div>
                                 <div className="text-[10px] opacity-70">Teknik Rapor & SEO</div>
                             </div>
+                        </button>
+
+                        <button
+                            onClick={() => {
+                                navigate("/master-control");
+                                onClose();
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-secondary/10 text-secondary hover:bg-secondary/20 transition-all font-display font-bold text-sm"
+                        >
+                            <LayoutDashboard size={20} /> Komuta Merkezi (.online)
                         </button>
 
                         <button
