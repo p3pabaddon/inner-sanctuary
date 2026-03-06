@@ -44,7 +44,9 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     const [isUploading, setIsUploading] = useState(false);
     const [testResults, setTestResults] = useState<any[]>([]);
     const [moodHistory, setMoodHistory] = useState<any[]>([]);
+    const [appointments, setAppointments] = useState<any[]>([]);
     const [newSession, setNewSession] = useState({ date: "", time: "", type: "Online Seans" });
+    const [editingSession, setEditingSession] = useState<any>(null);
 
     // Lock body scroll when panel is open
     useEffect(() => {
@@ -201,6 +203,16 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 
         if (moods) setMoodHistory(moods);
 
+        // Fetch appointments
+        const { data: apps } = await supabase
+            .from('appointments')
+            .select('*')
+            .eq('client_id', client.id)
+            .order('date', { ascending: true })
+            .order('time', { ascending: true });
+
+        if (apps) setAppointments(apps);
+
         // Auto-scroll to details on mobile when a client is selected
     };
 
@@ -255,28 +267,56 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
         if (!newSession.date || !newSession.time || !selectedClient) return;
 
         setLoading(true);
-        const { error } = await supabase
-            .from('appointments')
-            .insert([
-                {
-                    client_id: selectedClient.id,
-                    full_name: selectedClient.full_name,
-                    email: selectedClient.email,
-                    type: newSession.type,
-                    date: newSession.date,
-                    time: newSession.time,
-                    status: 'Gelecek'
-                }
-            ]);
+
+        const sessionData = {
+            client_id: selectedClient.id,
+            type: newSession.type,
+            date: newSession.date,
+            time: newSession.time,
+            status: 'Gelecek'
+        };
+
+        let result;
+        if (editingSession) {
+            result = await supabase
+                .from('appointments')
+                .update(sessionData)
+                .eq('id', editingSession.id);
+        } else {
+            result = await supabase
+                .from('appointments')
+                .insert([sessionData]);
+        }
+
+        const { error } = result;
 
         if (!error) {
-            toast.success("Seans başarıyla planlandı.");
+            toast.success(editingSession ? "Seans başarıyla güncellendi." : "Seans başarıyla planlandı.");
             setNewSession({ date: "", time: "", type: "Online Seans" });
+            setEditingSession(null);
+            // Refresh appointments
+            fetchClientDetails(selectedClient);
         } else {
             console.error("Schedule error:", error);
-            toast.error("Seans planlanırken hata oluştu.");
+            toast.error("İşlem sırasında bir hata oluştu.");
         }
         setLoading(false);
+    };
+
+    const handleDeleteAppointment = async (id: string) => {
+        if (!window.confirm("Bu seansı iptal etmek istediğinizden emin misiniz?")) return;
+
+        const { error } = await supabase
+            .from('appointments')
+            .delete()
+            .eq('id', id);
+
+        if (!error) {
+            toast.success("Seans iptal edildi.");
+            setAppointments(appointments.filter(a => a.id !== id));
+        } else {
+            toast.error("Hata oluştu.");
+        }
     };
 
     const handleDeleteNote = async (noteId: string) => {
@@ -590,50 +630,114 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                                         </div>
                                     </div>
 
-                                    {/* Seans Planlama - NEW SECTION */}
-                                    <div className="bg-primary/5 dark:bg-primary/5 p-6 rounded-[2rem] border border-primary/20">
-                                        <h4 className="font-display font-bold text-sm mb-4 flex items-center gap-2 uppercase tracking-widest text-primary">
-                                            <Calendar size={16} /> Seans Planla
-                                        </h4>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="space-y-1.5">
-                                                    <label className="text-[10px] font-bold text-muted-foreground uppercase ml-1 font-display">Tarih</label>
-                                                    <input
-                                                        type="date"
-                                                        value={newSession.date}
-                                                        onChange={(e) => setNewSession({ ...newSession, date: e.target.value })}
-                                                        className="w-full p-3 rounded-xl bg-white dark:bg-zinc-800 border border-border dark:border-zinc-700 text-sm focus:ring-2 focus:ring-primary/20 outline-none font-body text-foreground"
-                                                    />
+                                    {/* Seans Listesi & Planlama */}
+                                    <div className="bg-primary/5 dark:bg-primary/5 p-6 rounded-[2rem] border border-primary/20 space-y-6">
+                                        <div>
+                                            <h4 className="font-display font-bold text-sm mb-4 flex items-center gap-2 uppercase tracking-widest text-primary">
+                                                <Calendar size={16} /> Planlanmış Seanslar
+                                            </h4>
+                                            <div className="space-y-3">
+                                                {appointments.length > 0 ? (
+                                                    appointments.map((app) => (
+                                                        <div key={app.id} className="flex items-center justify-between p-4 rounded-2xl bg-white dark:bg-zinc-800 border border-border dark:border-zinc-700 shadow-sm transition-all hover:shadow-md group">
+                                                            <div className="flex items-center gap-4">
+                                                                <div className="w-10 h-10 bg-accent dark:bg-zinc-700 rounded-xl flex items-center justify-center text-primary">
+                                                                    <Calendar size={20} />
+                                                                </div>
+                                                                <div>
+                                                                    <div className="text-sm font-body font-bold text-foreground">
+                                                                        {new Date(app.date).toLocaleDateString('tr-TR')} - {app.time.slice(0, 5)}
+                                                                    </div>
+                                                                    <div className="text-[10px] text-muted-foreground uppercase">{app.type}</div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setEditingSession(app);
+                                                                        setNewSession({
+                                                                            date: app.date,
+                                                                            time: app.time,
+                                                                            type: app.type
+                                                                        });
+                                                                    }}
+                                                                    className="p-2 rounded-lg hover:bg-accent dark:hover:bg-zinc-700 text-muted-foreground transition-all"
+                                                                    title="Düzenle"
+                                                                >
+                                                                    <FileText size={16} />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDeleteAppointment(app.id)}
+                                                                    className="p-2 rounded-lg hover:bg-destructive/10 text-destructive transition-all"
+                                                                    title="İptal Et"
+                                                                >
+                                                                    <Trash2 size={16} />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="text-xs text-muted-foreground italic py-2">Planlanmış seans bulunmuyor.</div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="pt-4 border-t border-primary/10">
+                                            <h4 className="font-display font-bold text-sm mb-4 flex items-center gap-2 uppercase tracking-widest text-primary">
+                                                <Plus size={16} /> {editingSession ? 'Seansı Düzenle' : 'Yeni Seans Planla'}
+                                            </h4>
+                                            <div className="space-y-4">
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div className="space-y-1.5">
+                                                        <label className="text-[10px] font-bold text-muted-foreground uppercase ml-1 font-display">Tarih</label>
+                                                        <input
+                                                            type="date"
+                                                            value={newSession.date}
+                                                            onChange={(e) => setNewSession({ ...newSession, date: e.target.value })}
+                                                            className="w-full p-3 rounded-xl bg-white dark:bg-zinc-800 border border-border dark:border-zinc-700 text-sm focus:ring-2 focus:ring-primary/20 outline-none font-body text-foreground"
+                                                        />
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <label className="text-[10px] font-bold text-muted-foreground uppercase ml-1 font-display">Saat</label>
+                                                        <input
+                                                            type="time"
+                                                            value={newSession.time}
+                                                            onChange={(e) => setNewSession({ ...newSession, time: e.target.value })}
+                                                            className="w-full p-3 rounded-xl bg-white dark:bg-zinc-800 border border-border dark:border-zinc-700 text-sm focus:ring-2 focus:ring-primary/20 outline-none font-body text-foreground"
+                                                        />
+                                                    </div>
                                                 </div>
                                                 <div className="space-y-1.5">
-                                                    <label className="text-[10px] font-bold text-muted-foreground uppercase ml-1 font-display">Saat</label>
-                                                    <input
-                                                        type="time"
-                                                        value={newSession.time}
-                                                        onChange={(e) => setNewSession({ ...newSession, time: e.target.value })}
+                                                    <label className="text-[10px] font-bold text-muted-foreground uppercase ml-1 font-display">Seans Türü</label>
+                                                    <select
+                                                        value={newSession.type}
+                                                        onChange={(e) => setNewSession({ ...newSession, type: e.target.value })}
                                                         className="w-full p-3 rounded-xl bg-white dark:bg-zinc-800 border border-border dark:border-zinc-700 text-sm focus:ring-2 focus:ring-primary/20 outline-none font-body text-foreground"
-                                                    />
+                                                    >
+                                                        <option value="Online Seans">Online Seans</option>
+                                                        <option value="Yüz Yüze">Yüz Yüze Seans</option>
+                                                    </select>
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={handleScheduleSession}
+                                                        className="flex-1 py-3 rounded-xl bg-primary text-white font-display font-bold text-sm hover:shadow-lg transition-all active:scale-95"
+                                                    >
+                                                        {editingSession ? 'Değişiklikleri Kaydet' : 'Seansı Planla'}
+                                                    </button>
+                                                    {editingSession && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setEditingSession(null);
+                                                                setNewSession({ date: "", time: "", type: "Online Seans" });
+                                                            }}
+                                                            className="px-4 py-3 rounded-xl bg-accent text-foreground font-display font-bold text-sm hover:bg-accent/80 transition-all"
+                                                        >
+                                                            Vazgeç
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
-                                            <div className="space-y-1.5">
-                                                <label className="text-[10px] font-bold text-muted-foreground uppercase ml-1 font-display">Seans Türü</label>
-                                                <select
-                                                    value={newSession.type}
-                                                    onChange={(e) => setNewSession({ ...newSession, type: e.target.value })}
-                                                    className="w-full p-3 rounded-xl bg-white dark:bg-zinc-800 border border-border dark:border-zinc-700 text-sm focus:ring-2 focus:ring-primary/20 outline-none font-body text-foreground"
-                                                >
-                                                    <option>Online Seans</option>
-                                                    <option>Yüz Yüze Seans</option>
-                                                    <option>Değerlendirme Görüşmesi</option>
-                                                </select>
-                                            </div>
-                                            <button
-                                                onClick={handleScheduleSession}
-                                                className="w-full py-3 rounded-xl bg-primary text-white font-display font-bold text-sm hover:shadow-lg transition-all active:scale-95"
-                                            >
-                                                Seansı Kaydet
-                                            </button>
                                         </div>
                                     </div>
 
