@@ -15,7 +15,13 @@ import {
     LogOut,
     Check,
     RefreshCcw,
-    Trash2
+    Trash2,
+    Smile,
+    Meh,
+    Frown,
+    CloudRain,
+    Zap,
+    TrendingUp
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -35,6 +41,7 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     const [newNote, setNewNote] = useState({ title: "", content: "" });
     const [isUploading, setIsUploading] = useState(false);
     const [testResults, setTestResults] = useState<any[]>([]);
+    const [moodHistory, setMoodHistory] = useState<any[]>([]);
 
     // Lock body scroll when panel is open
     useEffect(() => {
@@ -181,6 +188,16 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 
         if (results) setTestResults(results);
 
+        // Fetch mood history
+        const { data: moods } = await supabase
+            .from('mood_logs')
+            .select('*')
+            .eq('user_id', client.id)
+            .order('created_at', { ascending: false })
+            .limit(7);
+
+        if (moods) setMoodHistory(moods);
+
         // Auto-scroll to details on mobile when a client is selected
     };
 
@@ -253,6 +270,28 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             alert("Not silinirken bir hata oluştu: " + error?.message);
         }
         setLoading(false);
+    };
+
+    const getMoodIcon = (mood: string, size = 20) => {
+        switch (mood) {
+            case 'happy': return <Smile size={size} className="text-green-500" />;
+            case 'neutral': return <Meh size={size} className="text-yellow-500" />;
+            case 'sad': return <Frown size={size} className="text-blue-500" />;
+            case 'anxious': return <CloudRain size={size} className="text-purple-500" />;
+            case 'angry': return <Zap size={size} className="text-red-500" />;
+            default: return <Meh size={size} />;
+        }
+    };
+
+    const getMoodLabel = (mood: string) => {
+        switch (mood) {
+            case 'happy': return 'Mutlu';
+            case 'neutral': return 'Normal';
+            case 'sad': return 'Üzgün';
+            case 'anxious': return 'Kaygılı';
+            case 'angry': return 'Öfkeli';
+            default: return mood;
+        }
     };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -497,6 +536,26 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 
                                 {/* Activity & Files */}
                                 <div className="flex-1 p-6 lg:p-8 overflow-y-auto space-y-8 order-1 lg:order-2 bg-white dark:bg-zinc-900">
+                                    {/* Mood History - NEW SECTION */}
+                                    <div className="bg-accent/5 dark:bg-zinc-800/20 p-6 rounded-[2rem] border border-border dark:border-zinc-800">
+                                        <h4 className="font-display font-bold text-sm mb-4 flex items-center gap-2 uppercase tracking-widest text-muted-foreground">
+                                            <TrendingUp size={16} className="text-primary" /> Duygu Takibi (Son 7 Gün)
+                                        </h4>
+                                        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+                                            {moodHistory.length > 0 ? (
+                                                moodHistory.map((log, i) => (
+                                                    <div key={i} className="flex-shrink-0 flex flex-col items-center gap-2 p-3 rounded-xl bg-white dark:bg-zinc-800 shadow-sm border border-border dark:border-zinc-700 min-w-[80px]">
+                                                        {getMoodIcon(log.mood, 24)}
+                                                        <div className="text-[10px] font-bold text-foreground">{getMoodLabel(log.mood)}</div>
+                                                        <div className="text-[8px] text-muted-foreground uppercase">{new Date(log.created_at).toLocaleDateString('tr-TR', { weekday: 'short' })}</div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="text-xs text-muted-foreground italic py-2">Henüz ruh hali kaydı yok.</div>
+                                            )}
+                                        </div>
+                                    </div>
+
                                     <AnimatePresence>
                                         {isAddingNote && (
                                             <motion.div

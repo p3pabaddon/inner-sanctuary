@@ -12,7 +12,12 @@ import {
     ChevronRight,
     MessageSquare,
     RefreshCcw,
-    Circle
+    Circle,
+    Smile,
+    Meh,
+    Frown,
+    CloudRain,
+    Zap
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -39,8 +44,12 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
         recentNotes: [],
         documents: [],
         sessions: [],
-        messages: []
+        messages: [],
+        moodHistory: []
     });
+    const [selectedMood, setSelectedMood] = useState<string | null>(null);
+    const [moodNote, setMoodNote] = useState("");
+    const [isLoggingMood, setIsLoggingMood] = useState(false);
 
     useEffect(() => {
         // Body scroll lock
@@ -162,17 +171,26 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                 .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
                 .order('created_at', { ascending: true });
 
+            // 4. Fetch Mood Logs
+            const { data: moodLogs } = await supabase
+                .from('mood_logs')
+                .select('*')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(7);
+
             setDashboardData({
                 progress: profile?.progress || 0,
-                nextSession: "Henüz planlanmadı", // Appointments table connection can be added later
+                nextSession: "Henüz planlanmadı",
                 recentNotes: [],
                 documents: docs || [],
-                sessions: [], // Appointments will be fetched from appointments table
+                sessions: [],
                 messages: msgs?.map(m => ({
                     sender: m.sender_role,
                     text: m.text,
                     time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                })) || []
+                })) || [],
+                moodHistory: moodLogs || []
             });
         } catch (error) {
             console.error("Portal data fetch error:", error);
@@ -298,6 +316,49 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                 messages: [...prev.messages, newMessage]
             }));
             setMessage("");
+        }
+    };
+
+    const handleMoodLog = async (mood: string) => {
+        if (!user) return;
+        setIsLoggingMood(true);
+        const { data, error } = await supabase
+            .from('mood_logs')
+            .insert([{ user_id: user.id, mood, note: moodNote }])
+            .select()
+            .single();
+
+        if (!error && data) {
+            setDashboardData((prev: any) => ({
+                ...prev,
+                moodHistory: [data, ...prev.moodHistory].slice(0, 7)
+            }));
+            setSelectedMood(null);
+            setMoodNote("");
+            alert("Ruh halin kaydedildi. Harikasın! ✨");
+        }
+        setIsLoggingMood(false);
+    };
+
+    const getMoodIcon = (mood: string, size = 24) => {
+        switch (mood) {
+            case 'happy': return <Smile size={size} className="text-green-500" />;
+            case 'neutral': return <Meh size={size} className="text-yellow-500" />;
+            case 'sad': return <Frown size={size} className="text-blue-500" />;
+            case 'anxious': return <CloudRain size={size} className="text-purple-500" />;
+            case 'angry': return <Zap size={size} className="text-red-500" />;
+            default: return <Meh size={size} />;
+        }
+    };
+
+    const getMoodLabel = (mood: string) => {
+        switch (mood) {
+            case 'happy': return 'Mutlu';
+            case 'neutral': return 'Normal';
+            case 'sad': return 'Üzgün';
+            case 'anxious': return 'Kaygılı';
+            case 'angry': return 'Öfkeli';
+            default: return mood;
         }
     };
 
@@ -504,6 +565,26 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                                             <p className="text-muted-foreground font-body">Bugün kendini nasıl hissediyorsun?</p>
                                         </header>
 
+                                        <div className="flex flex-wrap gap-4 items-center mb-8">
+                                            {[
+                                                { id: 'happy', icon: Smile, color: 'bg-green-500/10 text-green-500' },
+                                                { id: 'neutral', icon: Meh, color: 'bg-yellow-500/10 text-yellow-500' },
+                                                { id: 'sad', icon: Frown, color: 'bg-blue-500/10 text-blue-500' },
+                                                { id: 'anxious', icon: CloudRain, color: 'bg-purple-500/10 text-purple-500' },
+                                                { id: 'angry', icon: Zap, color: 'bg-red-500/10 text-red-500' }
+                                            ].map((m) => (
+                                                <button
+                                                    key={m.id}
+                                                    onClick={() => handleMoodLog(m.id)}
+                                                    disabled={isLoggingMood}
+                                                    className={`w-16 h-16 rounded-3xl flex flex-col items-center justify-center transition-all hover:scale-110 active:scale-95 ${m.color} border border-transparent hover:border-current shadow-sm group relative`}
+                                                >
+                                                    <m.icon size={28} />
+                                                    <span className="absolute -bottom-6 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity uppercase tracking-widest">{getMoodLabel(m.id)}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+
                                         <div className="grid sm:grid-cols-2 gap-6">
                                             <div className="bg-white/60 dark:bg-zinc-800/40 p-7 rounded-[2.5rem] border border-white dark:border-zinc-700/50 shadow-soft relative overflow-hidden group">
                                                 <div className="flex items-center justify-between mb-6 relative z-10">
@@ -532,6 +613,26 @@ const ClientPortal = ({ isOpen, onClose }: ClientPortalProps) => {
                                                     Seans Detayları <ChevronRight size={12} />
                                                 </div>
                                                 <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-secondary/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                                            </div>
+                                        </div>
+
+                                        {/* Mood History Chart Area (Simplified for now) */}
+                                        <div className="bg-white/40 dark:bg-zinc-800/20 p-8 rounded-[2.5rem] border border-white dark:border-zinc-800 shadow-soft">
+                                            <h4 className="text-sm font-display font-bold text-foreground mb-6 uppercase tracking-[0.2em] flex items-center gap-2">
+                                                <TrendingUp size={16} className="text-primary" /> Son Ruh Hali Kayıtların
+                                            </h4>
+                                            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+                                                {dashboardData.moodHistory.length > 0 ? (
+                                                    dashboardData.moodHistory.map((log: any, i: number) => (
+                                                        <div key={i} className="flex-shrink-0 flex flex-col items-center gap-2 p-4 rounded-2xl bg-white dark:bg-zinc-800 shadow-xs border border-white dark:border-zinc-700 min-w-[100px]">
+                                                            {getMoodIcon(log.mood, 32)}
+                                                            <div className="text-[10px] font-bold text-foreground">{getMoodLabel(log.mood)}</div>
+                                                            <div className="text-[9px] text-muted-foreground uppercase">{new Date(log.created_at).toLocaleDateString('tr-TR', { weekday: 'short' })}</div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="text-sm text-muted-foreground italic py-4">Henüz bir kayıt yok. Yukarıdan seçim yaparak başlayabilirsin!</div>
+                                                )}
                                             </div>
                                         </div>
 
