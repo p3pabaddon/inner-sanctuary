@@ -52,6 +52,16 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
         };
     }, [isOpen]);
 
+    useEffect(() => {
+        // Auto-scroll to details on mobile when a client is selected
+        if (selectedClient && window.innerWidth < 1024 && detailsRef.current) {
+            // Use a small timeout to ensure the DOM has rendered the new content
+            setTimeout(() => {
+                detailsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }, [selectedClient?.id]);
+
     const fetchAdminData = async () => {
         setLoading(true);
         // Fetch all profiles
@@ -107,11 +117,6 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
             .order('created_at', { ascending: false });
 
         if (results) setTestResults(results);
-
-        // Auto-scroll to details on mobile
-        if (window.innerWidth < 1024 && detailsRef.current) {
-            detailsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
     };
 
     const sendAdminMessage = async () => {
