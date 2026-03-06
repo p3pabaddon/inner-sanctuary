@@ -55,12 +55,17 @@ const AdminPanel = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
                 .on('postgres_changes', {
                     event: 'INSERT',
                     schema: 'public',
-                    table: 'messages',
-                    filter: `receiver_id=eq.${selectedClient.id}` // This is slightly tricky, we'd need to filter by current selected client
+                    table: 'messages'
+                    // Remove restrictive filter to catch both directions
                 }, (payload) => {
                     // Update messages if the new message is related to the selected client
                     if (payload.new.sender_id === selectedClient.id || payload.new.receiver_id === selectedClient.id) {
-                        setMessages(prev => [...prev, payload.new]);
+                        // Check if message already exists to avoid duplicates from optimistic updates
+                        setMessages(prev => {
+                            const exists = prev.some(m => m.id === payload.new.id || (m.text === payload.new.text && Math.abs(new Date(m.created_at).getTime() - new Date(payload.new.created_at).getTime()) < 1000));
+                            if (exists) return prev;
+                            return [...prev, payload.new];
+                        });
                     }
                 })
                 .subscribe();
