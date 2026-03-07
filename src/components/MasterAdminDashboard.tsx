@@ -104,6 +104,22 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
     useEffect(() => {
         fetchInitialData();
 
+        // Real-time Subscriptions
+        const appointmentsSubscription = supabase
+            .channel('any')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'appointments' }, () => {
+                fetchInitialData();
+                toast.info("Yeni randevu aktivitesi algılandı.");
+            })
+            .subscribe();
+
+        const blogSubscription = supabase
+            .channel('blog-changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'blog_posts' }, () => {
+                fetchInitialData();
+            })
+            .subscribe();
+
         const logId = setInterval(() => {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('tr-TR');
@@ -113,7 +129,11 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
             setLiveLogs(prev => [{ time: timeStr, event: randomEvent, id: Math.random().toString(36).substr(2, 5) }, ...prev].slice(0, 50));
         }, 3000);
 
-        return () => clearInterval(logId);
+        return () => {
+            clearInterval(logId);
+            supabase.removeChannel(appointmentsSubscription);
+            supabase.removeChannel(blogSubscription);
+        };
     }, []);
 
     const fetchInitialData = async () => {
