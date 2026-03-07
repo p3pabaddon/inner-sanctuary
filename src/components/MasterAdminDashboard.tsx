@@ -134,8 +134,9 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
             if (clientData) setClients(clientData);
             if (configData) setConfig(configData);
 
-            const basePrice = serviceData && serviceData.length > 0 ? Number(serviceData[0].price) || 850 : 850;
-            const calculatedRevenue = (apptCount || 0) * basePrice;
+            // Calculate real revenue from appointments
+            // Assuming we match appointments to services by type or just a default seans price
+            const calculatedRevenue = (apptData || []).reduce((acc, appt) => acc + 850, 0); // Simplified calculation
 
             setStats(prev => ({
                 ...prev,
@@ -151,20 +152,59 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
         setLoading(false);
     };
 
+    const fetchClientDetails = async (client: any) => {
+        setLoading(true);
+        try {
+            // Fetch appointments for this client (by email or client_id)
+            const { data: clientAppts } = await supabase
+                .from('appointments')
+                .select('*')
+                .eq('email', client.email)
+                .order('date', { ascending: false });
+
+            // Calculate total spend
+            const totalSpend = (clientAppts || []).length * 850;
+
+            setSelectedClient({
+                ...client,
+                appointments: clientAppts || [],
+                totalSpend: totalSpend
+            });
+            setSubView("client-profile");
+        } catch (e) {
+            toast.error("Danışan detayları yüklenemedi.");
+        }
+        setLoading(false);
+    };
+
     const handleSavePost = async () => {
         if (!currentPost.title || !currentPost.slug) {
             toast.error("Başlık ve URL adresi zorunludur.");
             return;
         }
         setLoading(true);
-        const { error } = await supabase.from('blog_posts').upsert({ ...currentPost, updated_at: new Date().toISOString() });
+        const { error } = await supabase.from('blog_posts').upsert({
+            ...currentPost,
+            updated_at: new Date().toISOString()
+        });
+
         if (error) toast.error("Hata: " + error.message);
         else {
-            toast.success("Değişiklikler başarıyla yayına alındı.");
+            toast.success("Makale başarıyla kaydedildi.");
             setIsEditingPost(false);
             fetchInitialData();
         }
         setLoading(false);
+    };
+
+    const handleDeletePost = async (id: any) => {
+        if (!confirm("Bu makaleyi silmek istediğinize emin misiniz?")) return;
+        const { error } = await supabase.from('blog_posts').delete().eq('id', id);
+        if (error) toast.error("Hata: " + error.message);
+        else {
+            toast.success("Makale silindi.");
+            fetchInitialData();
+        }
     };
 
     const handleSaveService = async () => {
@@ -204,8 +244,7 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
     };
 
     const openClientProfile = (client: any) => {
-        setSelectedClient(client);
-        setSubView("client-profile");
+        fetchClientDetails(client);
     };
 
     return (
@@ -454,7 +493,7 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                                             </div>
                                             <div className="bg-zinc-950 p-8 rounded-[2rem] border border-white/5 text-center px-12">
                                                 <div className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mb-2">Toplam Harcama</div>
-                                                <div className="text-3xl font-black text-white tracking-tighter">₺2,550</div>
+                                                <div className="text-3xl font-black text-white tracking-tighter">₺{selectedClient.totalSpend.toLocaleString('tr-TR')}</div>
                                             </div>
                                         </div>
 
@@ -462,12 +501,21 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                                             <div className="bg-white/5 p-8 rounded-[2rem] border border-white/5 space-y-6">
                                                 <div className="flex items-center gap-3 mb-4"><Calendar className="text-secondary" size={20} /> <h5 className="font-bold text-xl">Seans Geçmişi</h5></div>
                                                 <div className="space-y-3">
-                                                    {[1, 2, 3].map(i => (
-                                                        <div key={i} className="flex justify-between items-center p-4 bg-black/40 rounded-xl border border-white/5">
-                                                            <div><div className="text-sm font-bold">Bireysel Terapi</div><div className="text-[10px] text-zinc-500">12.02.2026 • 15:00</div></div>
-                                                            <div className="text-emerald-500 text-xs font-bold">TAMAMLANDI</div>
-                                                        </div>
-                                                    ))}
+                                                    {selectedClient.appointments && selectedClient.appointments.length > 0 ? (
+                                                        selectedClient.appointments.map((apt: any) => (
+                                                            <div key={apt.id} className="flex justify-between items-center p-4 bg-black/40 rounded-xl border border-white/5">
+                                                                <div>
+                                                                    <div className="text-sm font-bold">{apt.type}</div>
+                                                                    <div className="text-[10px] text-zinc-500">{apt.date} • {apt.time}</div>
+                                                                </div>
+                                                                <div className={`text-xs font-bold ${apt.status === 'Tamamlandı' ? 'text-emerald-500' : 'text-secondary'}`}>
+                                                                    {apt.status.toUpperCase()}
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div className="text-zinc-500 italic text-sm text-center py-8">Henüz randevu bulunmuyor.</div>
+                                                    )}
                                                 </div>
                                             </div>
                                             <div className="bg-white/5 p-8 rounded-[2rem] border border-white/5 space-y-6">
@@ -699,12 +747,71 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
 
                     {/* BLOG & SECURITY VIEWS (Bundled in same flow as previous v2) */}
                     {activeView === "blog" && (
-                        <div className="p-4 flex flex-col items-center justify-center h-full space-y-8">
-                            <FileText size={80} className="text-zinc-800" />
-                            <div className="text-center">
-                                <h3 className="text-3xl font-black italic tracking-tighter uppercase mb-2">MAKALE <span className="text-secondary not-italic">EDİTÖRÜ</span></h3>
-                                <p className="text-zinc-500 italic">Blog yazılarını yönetmek için v2 CMS modülü devrededir.</p>
-                            </div>
+                        <div className="space-y-12">
+                            <header className="flex justify-between items-end">
+                                <div>
+                                    <h2 className="text-5xl font-black italic tracking-tighter uppercase mb-2">MAKALE <span className="text-secondary not-italic">EDİTÖRÜ</span></h2>
+                                    <p className="text-zinc-500 font-body italic">İçerik stratejinizi yönetin ve makalelerinizi yayınlayın.</p>
+                                </div>
+                                <button
+                                    onClick={() => {
+                                        setCurrentPost({ title: "", slug: "", category: "Genel", excerpt: "", content: "", image_url: "" });
+                                        setIsEditingPost(true);
+                                    }}
+                                    className="px-8 py-4 bg-secondary text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:-translate-y-1 transition-all flex items-center gap-3"
+                                >
+                                    <Plus size={20} /> YENİ MAKALE YAZ
+                                </button>
+                            </header>
+
+                            {isEditingPost ? (
+                                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-zinc-900/50 backdrop-blur-3xl p-12 rounded-[3.5rem] border border-white/10 shadow-2xl space-y-8">
+                                    <div className="grid md:grid-cols-2 gap-8">
+                                        <div className="space-y-4">
+                                            <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest ml-2">Makale Başlığı</span>
+                                            <input type="text" value={currentPost.title} onChange={(e) => setCurrentPost({ ...currentPost, title: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-5 rounded-2xl outline-none focus:border-secondary text-white font-bold" placeholder="Giriş başlığı..." />
+                                        </div>
+                                        <div className="space-y-4">
+                                            <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest ml-2">URL Adresi (Slug)</span>
+                                            <input type="text" value={currentPost.slug} onChange={(e) => setCurrentPost({ ...currentPost, slug: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-5 rounded-2xl outline-none focus:border-secondary text-zinc-400 font-mono" placeholder="makale-url-adresi" />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest ml-2">Kısa Özet</span>
+                                        <textarea value={currentPost.excerpt} onChange={(e) => setCurrentPost({ ...currentPost, excerpt: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-5 rounded-2xl outline-none focus:border-secondary text-zinc-300 resize-none h-24" placeholder="Ana sayfada görünecek kısa açıklama..." />
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest ml-2">Makale İçeriği (Markdown Destekli)</span>
+                                        <textarea value={currentPost.content} onChange={(e) => setCurrentPost({ ...currentPost, content: e.target.value })} className="w-full bg-zinc-950 border border-zinc-800 p-5 rounded-2xl outline-none focus:border-secondary text-zinc-300 resize-none h-96 font-body leading-relaxed" placeholder="Tüm içeriği buraya yazın..." />
+                                    </div>
+
+                                    <div className="flex gap-4 pt-6">
+                                        <button onClick={() => setIsEditingPost(false)} className="px-8 py-4 border border-zinc-800 rounded-2xl text-zinc-500 font-black uppercase tracking-widest hover:bg-white/5 transition-all">İptal</button>
+                                        <button onClick={handleSavePost} className="flex-1 py-4 bg-secondary text-white rounded-2xl font-black uppercase tracking-widest hover:bg-orange-600 transition-all flex items-center justify-center gap-3"><Save size={20} /> MAKALE YAYINLA</button>
+                                    </div>
+                                </motion.div>
+                            ) : (
+                                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                    {posts.map((post) => (
+                                        <div key={post.id} className="bg-zinc-900/30 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/5 group hover:border-secondary/30 transition-all">
+                                            <div className="flex justify-between items-start mb-6">
+                                                <div className="bg-secondary/10 px-3 py-1 rounded-full text-[10px] font-black uppercase text-secondary tracking-widest">{post.category}</div>
+                                                <div className="flex gap-3">
+                                                    <button onClick={() => { setCurrentPost(post); setIsEditingPost(true); }} className="text-zinc-500 hover:text-white transition-colors"><Edit3 size={18} /></button>
+                                                    <button onClick={() => handleDeletePost(post.id)} className="text-zinc-500 hover:text-destructive transition-colors"><Trash2 size={18} /></button>
+                                                </div>
+                                            </div>
+                                            <h3 className="text-xl font-bold mb-3 group-hover:text-secondary transition-colors">{post.title}</h3>
+                                            <p className="text-zinc-500 text-sm line-clamp-3 mb-6">{post.excerpt}</p>
+                                            <div className="flex items-center gap-2 text-[10px] text-zinc-600 font-mono">
+                                                <Calendar size={12} /> {new Date(post.created_at).toLocaleDateString('tr-TR')}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )}
 
