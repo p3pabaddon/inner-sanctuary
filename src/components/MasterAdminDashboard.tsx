@@ -65,7 +65,18 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
 
     // Real Data State
     const [posts, setPosts] = useState<any[]>([]);
-    const [services, setServices] = useState<any[]>([]);
+    const [services, setServices] = useState<any[]>([
+        { id: 1, title: 'Bireysel Terapi', description: 'Yetişkinlere yönelik kişisel gelişim ve psikolojik destek süreci.', price: 2500, duration: '50 Dakika', icon: 'User' },
+        { id: 2, title: 'Çift Terapisi', description: 'İlişki dinamiklerini güçlendirme ve çatışma çözme odaklı seanslar.', price: 3500, duration: '80 Dakika', icon: 'Users' },
+        { id: 3, title: 'Aile Danışmanlığı', description: 'Aile içi iletişimi düzenleme ve sağlıklı sınırlar oluşturma.', price: 4000, duration: '90 Dakika', icon: 'Heart' },
+        { id: 4, title: 'Çocuk ve Ergen Terapisi', description: 'Gelişim dönemine uygun pedagojik destek ve oyun terapisi.', price: 2000, duration: '45 Dakika', icon: 'Baby' },
+        { id: 5, title: 'EMDR Terapisi', description: 'Travmatik anıların işlenmesi ve duyarsızlaştırma tekniği.', price: 3000, duration: '60 Dakika', icon: 'Activity' },
+        { id: 6, title: 'Kurumsal Danışmanlık', description: 'Şirket içi verimlilik ve çalışan iyi oluşu programları.', price: 7500, duration: 'Günlük', icon: 'Briefcase' },
+        { id: 7, title: 'Grup Terapisi', description: 'Benzer deneyimlere sahip kişilerle ortak gelişim süreci.', price: 1500, duration: '120 Dakika', icon: 'Shield' },
+        { id: 8, title: 'Online Terapi', description: 'Dünyanın her yerinden güvenli görüntülü görüşme imkanı.', price: 2500, duration: '50 Dakika', icon: 'Video' },
+        { id: 9, title: 'Cinsel Terapi', description: 'Cinsel sağlık ve işlev bozuklukları üzerine uzman desteği.', price: 3500, duration: '50 Dakika', icon: 'Sparkles' },
+        { id: 10, title: 'Kariyer Danışmanlığı', description: 'Mesleki hedefler ve iş hayatı stresi yönetimi.', price: 2000, duration: '50 Dakika', icon: 'Target' }
+    ]);
     const [appointments, setAppointments] = useState<any[]>([]);
     const [clients, setClients] = useState<any[]>([]);
     const [selectedClient, setSelectedClient] = useState<any>(null);
@@ -369,10 +380,10 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
             <main className="relative z-10 flex-1 overflow-y-auto bg-gradient-to-b from-[#0a0a0a] to-black p-6 md:p-12 lg:p-16">
                 <header className="mb-12 flex justify-between items-end">
                     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-                        <h2 className="text-5xl font-black tracking-tighter text-white mb-2 italic">ANA <span className="text-secondary not-italic">KOMUTA</span></h2>
-                        <div className="flex items-center gap-4 text-zinc-500 text-xs font-bold uppercase tracking-[0.2em]">
-                            <span>Sürüm 1.2</span>
-                            <span className="w-1 h-1 rounded-full bg-zinc-700" />
+                        <h2 className="text-5xl font-light tracking-tighter text-white mb-2 font-display uppercase">Yönetim <span className="text-amber-200/60 italic font-serif lowercase">paneli</span></h2>
+                        <div className="flex items-center gap-4 text-zinc-500 text-[10px] font-bold uppercase tracking-[0.3em]">
+                            <span className="text-amber-200/40">PROFESYONEL SİSTEM</span>
+                            <span className="w-1 h-1 rounded-full bg-zinc-800" />
                             <span>{new Date().toLocaleDateString('tr-TR')}</span>
                         </div>
                     </motion.div>
@@ -646,84 +657,74 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
 
                                             {/* Header Overlay */}
                                             <div className="absolute top-10 left-10 z-20">
-                                                <h4 className="text-4xl font-black uppercase italic tracking-tighter text-white font-display">TR <span className="text-secondary not-italic">KOMUTA MERKEZİ</span></h4>
-                                                <div className="flex items-center gap-3 text-[10px] text-zinc-500 font-bold uppercase tracking-[0.3em] mt-3">
-                                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                                                    CANLI_AKTIF_KULLANICI_TAKIBI v2.1
+                                                <h4 className="text-3xl font-light uppercase tracking-tighter text-white font-display">Huzur <span className="text-amber-200/50 italic font-serif lowercase">odağı</span></h4>
+                                                <div className="flex items-center gap-3 text-[9px] text-zinc-500 font-bold uppercase tracking-[0.4em] mt-3">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-amber-200/40 animate-pulse" />
+                                                    CANLI AKIŞ MERKEZİ
                                                 </div>
                                             </div>
 
-                                            {/* Turkey Map Area */}
                                             <div className="flex-1 relative flex items-center justify-center min-h-[400px]">
-                                                <div className="relative w-full h-full flex items-center justify-center">
-                                                    {/* Turkey Base Map (High-End SVG) */}
-                                                    <svg viewBox="0 0 1000 480" className="w-full h-auto max-h-full drop-shadow-[0_0_50px_rgba(249,123,34,0.15)] opacity-90 transition-all">
-                                                        {/* Simple Turkey Outline - For a real app, use a detailed path data string */}
-                                                        <path
-                                                            d="M50,150 L150,120 L300,100 L450,110 L600,100 L750,120 L900,140 L950,220 L920,350 L800,420 L600,450 L400,430 L200,400 L50,300 Z"
-                                                            fill="#0a0a0a"
-                                                            stroke="rgba(255,255,255,0.08)"
-                                                            strokeWidth="1.5"
-                                                        />
+                                                <div className="relative w-full h-full flex items-center justify-center scale-90 lg:scale-110">
+                                                    {/* Serenity Focus - Harmonic Visualization */}
+                                                    <svg viewBox="0 0 800 800" className="w-[600px] h-[600px] drop-shadow-[0_0_80px_rgba(252,211,77,0.1)] opacity-80 transition-all duration-1000">
+                                                        <defs>
+                                                            <linearGradient id="lotusGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                                                <stop offset="0%" stopColor="rgba(251, 191, 36, 0.4)" />
+                                                                <stop offset="100%" stopColor="rgba(251, 191, 36, 0.1)" />
+                                                            </linearGradient>
+                                                        </defs>
 
-                                                        {/* Grid Lines for Scifi Look */}
-                                                        <g opacity="0.05">
-                                                            {Array.from({ length: 20 }).map((_, i) => (
-                                                                <line key={`v-${i}`} x1={i * 50} y1="0" x2={i * 50} y2="480" stroke="white" strokeWidth="0.5" />
+                                                        <motion.g animate={{ rotate: 360 }} transition={{ duration: 120, repeat: Infinity, ease: "linear" }}>
+                                                            {Array.from({ length: 12 }).map((_, i) => (
+                                                                <ellipse key={i} cx="400" cy="400" rx="350" ry="120" fill="none" stroke="url(#lotusGrad)" strokeWidth="0.5" transform={`rotate(${i * 30} 400 400)`} className="opacity-20" />
                                                             ))}
-                                                            {Array.from({ length: 10 }).map((_, i) => (
-                                                                <line key={`h-${i}`} x1="0" y1={i * 50} x2="1000" y2={i * 50} stroke="white" strokeWidth="0.5" />
+                                                        </motion.g>
+
+                                                        <g>
+                                                            {Array.from({ length: 8 }).map((_, i) => (
+                                                                <motion.path
+                                                                    key={i} d="M400,400 Q450,300 400,200 Q350,300 400,400" fill="rgba(251, 191, 36, 0.03)" stroke="rgba(251, 191, 36, 0.2)" strokeWidth="0.8" transform={`rotate(${i * 45} 400 400)`}
+                                                                    animate={{ scale: [1, 1.05, 1], opacity: [0.2, 0.5, 0.2] }}
+                                                                    transition={{ duration: 6, repeat: Infinity, delay: i * 0.75, ease: "easeInOut" }}
+                                                                />
                                                             ))}
                                                         </g>
 
-                                                        {/* City Hotspots */}
                                                         {[
-                                                            { id: 'Istanbul', x: 205, y: 135, label: "İstanbul" },
-                                                            { id: 'Ankara', x: 455, y: 220, label: "Ankara" },
-                                                            { id: 'Izmir', x: 100, y: 260, label: "İzmir" },
-                                                            { id: 'Antalya', x: 315, y: 395, label: "Antalya" },
-                                                            { id: 'Bursa', x: 215, y: 185, label: "Bursa" },
-                                                            { id: 'Adana', x: 560, y: 375, label: "Adana" },
-                                                            { id: 'Trabzon', x: 755, y: 120, label: "Trabzon" },
-                                                            { id: 'Gaziantep', x: 670, y: 405, label: "Gaziantep" },
-                                                            { id: 'Diyarbakir', x: 840, y: 355, label: "Diyarbakır" },
-                                                            { id: 'Eskisehir', x: 340, y: 215, label: "Eskişehir" },
-                                                            { id: 'Samsun', x: 570, y: 105, label: "Samsun" },
-                                                        ].map((city) => {
-                                                            const count = activeUsersByCity[city.id] || 0;
+                                                            { id: 'Istanbul', x: 400, y: 150, label: "Hizmet Akışı" },
+                                                            { id: 'Ankara', x: 650, y: 400, label: "Danışan Odağı" },
+                                                            { id: 'Izmir', x: 400, y: 650, label: "Huzur Alanı" },
+                                                            { id: 'Antalya', x: 150, y: 400, label: "Denge Merkezi" },
+                                                            { id: 'Bursa', x: 570, y: 230, label: "Gelişim Hattı" },
+                                                        ].map((node) => {
+                                                            const count = activeUsersByCity[node.id] || 0;
                                                             return (
-                                                                <g
-                                                                    key={city.id}
-                                                                    className="cursor-pointer group/city"
-                                                                    onClick={() => setSelectedHotspot({ ...city, users: count, clicks: count * 15, status: count > 3 ? 'Yoğun' : 'Stabil' })}
-                                                                >
-                                                                    {/* Pulse Effect for Active Cities */}
-                                                                    {count > 0 && (
-                                                                        <circle cx={city.x} cy={city.y} r="12" className="fill-secondary/20 animate-ping" />
-                                                                    )}
-                                                                    <circle cx={city.x} cy={city.y} r="4" className={`fill-secondary shadow-[0_0_15px_rgba(249,123,34,0.5)] transition-all ${count > 0 ? "scale-150" : "opacity-40"}`} />
-                                                                    <text x={city.x} y={city.y + 20} textAnchor="middle" className="fill-zinc-600 text-[10px] font-bold uppercase tracking-tighter opacity-0 group-hover/city:opacity-100 transition-opacity">
-                                                                        {city.label}
-                                                                    </text>
+                                                                <g key={node.id} className="cursor-pointer group/node" onClick={() => setSelectedHotspot({ ...node, users: count, status: count > 2 ? 'Yüksek Frekans' : 'Dingin' })}>
+                                                                    <motion.circle
+                                                                        cx={node.x} cy={node.y} r={count > 0 ? "10" : "4"}
+                                                                        className={`fill-amber-200/50 shadow-[0_0_30px_rgba(251,191,36,0.3)] transition-all ${count > 0 ? "opacity-100" : "opacity-10 hover:opacity-50"}`}
+                                                                        animate={count > 0 ? { r: [10, 15, 10], opacity: [0.3, 0.8, 0.3] } : {}}
+                                                                        transition={{ duration: 3, repeat: Infinity }}
+                                                                    />
                                                                 </g>
                                                             );
                                                         })}
                                                     </svg>
                                                 </div>
 
-                                                {/* Tooltip Overlay */}
                                                 <AnimatePresence>
                                                     {selectedHotspot && (
                                                         <motion.div
                                                             initial={{ opacity: 0, scale: 0.8, y: 20 }}
                                                             animate={{ opacity: 1, scale: 1, y: 0 }}
                                                             exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                                                            className="absolute bottom-10 bg-black/90 backdrop-blur-2xl border border-secondary/50 p-6 rounded-3xl shadow-2xl min-w-[240px] z-[100]"
+                                                            className="absolute bottom-10 bg-black/90 backdrop-blur-2xl border border-amber-200/20 p-6 rounded-3xl shadow-2xl min-w-[240px] z-[100]"
                                                         >
                                                             <div className="flex justify-between items-start mb-4">
                                                                 <div>
-                                                                    <h6 className="text-secondary text-lg font-black uppercase italic tracking-tighter font-display">{selectedHotspot.label}</h6>
-                                                                    <span className="text-[10px] text-zinc-500 font-bold tracking-widest uppercase">Anlık Trafik Analizi</span>
+                                                                    <h6 className="text-amber-200 text-lg font-light uppercase tracking-tighter font-display">{selectedHotspot.label}</h6>
+                                                                    <span className="text-[10px] text-zinc-500 font-bold tracking-widest uppercase">Etkileşim Analizi</span>
                                                                 </div>
                                                                 <button onClick={() => setSelectedHotspot(null)} className="text-zinc-500 hover:text-white transition-colors">
                                                                     <X size={16} />
@@ -731,18 +732,12 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                                                             </div>
                                                             <div className="space-y-3">
                                                                 <div className="flex justify-between items-center text-sm">
-                                                                    <span className="text-zinc-400">Aktif Kullanıcı</span>
-                                                                    <span className="text-white font-black">{selectedHotspot.users} Kişi</span>
-                                                                </div>
-                                                                <div className="flex justify-between items-center text-sm">
-                                                                    <span className="text-zinc-400">Tahmini Hit</span>
-                                                                    <span className="text-white font-black">{selectedHotspot.clicks}</span>
+                                                                    <span className="text-zinc-400">Aktif Akış</span>
+                                                                    <span className="text-white font-bold">{selectedHotspot.users} Canlı</span>
                                                                 </div>
                                                                 <div className="flex justify-between items-center text-sm">
                                                                     <span className="text-zinc-400">Durum</span>
-                                                                    <span className={`font-black uppercase text-[10px] px-2 py-0.5 rounded-full ${selectedHotspot.status === 'Yoğun' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}`}>
-                                                                        {selectedHotspot.status}
-                                                                    </span>
+                                                                    <span className="text-amber-200/60 font-medium">{selectedHotspot.status}</span>
                                                                 </div>
                                                             </div>
                                                         </motion.div>
@@ -754,53 +749,53 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                                             <div className="w-full lg:w-96 flex flex-col gap-6 relative z-10">
                                                 <div className="bg-zinc-950/80 p-6 rounded-3xl border border-white/5 space-y-4">
                                                     <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                                                        <h5 className="text-secondary text-[10px] font-black uppercase tracking-widest">Canlı Trafik Akışı</h5>
-                                                        <span className="text-[8px] bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded-full animate-pulse font-black uppercase">LIVE</span>
+                                                        <h5 className="text-amber-200 text-[10px] font-light uppercase tracking-widest">Etkileşim odağı</h5>
+                                                        <span className="text-[8px] bg-amber-200/10 text-amber-200/60 px-2 py-1 rounded-full animate-pulse font-bold uppercase tracking-tighter">AKTİF</span>
                                                     </div>
                                                     <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                                                         {Object.entries(activeUsersByCity).length > 0 ? (
                                                             Object.entries(activeUsersByCity).map(([city, count]: any, i) => (
                                                                 <div key={city} className="flex justify-between items-center group">
                                                                     <div className="flex items-center gap-3">
-                                                                        <div className="w-1.5 h-1.5 rounded-full bg-secondary group-hover:scale-150 transition-transform" />
-                                                                        <span className="text-xs text-zinc-400 font-bold group-hover:text-white transition-colors uppercase tracking-wider">{city}</span>
+                                                                        <div className="w-1 h-1 rounded-full bg-amber-200/40 group-hover:scale-150 transition-transform" />
+                                                                        <span className="text-xs text-zinc-500 font-medium group-hover:text-zinc-300 transition-colors uppercase tracking-wider">{city}</span>
                                                                     </div>
                                                                     <div className="flex items-center gap-2">
-                                                                        <span className="text-sm font-black text-white">{count}</span>
-                                                                        <span className="text-[10px] text-zinc-600 font-bold">USER</span>
+                                                                        <span className="text-sm font-light text-white font-display">{count}</span>
+                                                                        <span className="text-[8px] text-zinc-600 font-bold uppercase">AKIŞ</span>
                                                                     </div>
                                                                 </div>
                                                             ))
                                                         ) : (
-                                                            <div className="text-center py-8 text-zinc-600 italic text-xs uppercase tracking-widest">Aktif kullanıcı aranıyor...</div>
+                                                            <div className="text-center py-8 text-zinc-600 italic text-[10px] uppercase tracking-widest">Sessizlik hakim...</div>
                                                         )}
                                                     </div>
                                                 </div>
 
-                                                <div className="flex-1 bg-gradient-to-br from-zinc-900 to-black p-8 rounded-3xl border border-white/5 flex flex-col justify-between relative overflow-hidden group">
-                                                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
-                                                        <Database size={64} className="text-secondary" />
+                                                <div className="flex-1 bg-white/[0.02] backdrop-blur-md p-8 rounded-[2.5rem] border border-white/5 flex flex-col justify-between relative overflow-hidden group">
+                                                    <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-20 transition-all duration-700">
+                                                        <Sparkles size={80} className="text-amber-200" />
                                                     </div>
                                                     <div>
-                                                        <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Sistem Tahmini</span>
-                                                        <p className="mt-4 text-sm text-zinc-300 leading-relaxed font-body italic border-l-2 border-secondary pl-4">
-                                                            "Bugün toplam <span className="text-secondary font-bold font-display">{stats.clientsCount * 2}</span> tekil ziyaretçi bekleniyor. Sunucu yükü optimal düzeyde."
+                                                        <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-[0.3em]">Huzur Öngörüsü</span>
+                                                        <p className="mt-5 text-base text-zinc-300 leading-relaxed font-serif italic border-l border-amber-200/20 pl-6">
+                                                            "Bugün merkezimizde <span className="text-amber-200/80 font-display not-italic">{stats.clientsCount * 2}</span> ruhun huzur bulması bekleniyor. Sistem akışı dingin."
                                                         </p>
                                                     </div>
-                                                    <div className="mt-8 space-y-4">
-                                                        <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                                                            <span>Optimizer Durumu</span>
-                                                            <span className="text-emerald-500">AKTİF</span>
+                                                    <div className="mt-10 space-y-4">
+                                                        <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest text-zinc-500">
+                                                            <span>Akış Dengesi</span>
+                                                            <span className="text-amber-200/40 italic lowercase">optimal</span>
                                                         </div>
-                                                        <div className="h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
-                                                            <motion.div initial={{ width: 0 }} animate={{ width: '85%' }} className="h-full bg-emerald-500" />
+                                                        <div className="h-0.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                                            <motion.div initial={{ width: 0 }} animate={{ width: '85%' }} className="h-full bg-amber-200/20" />
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Bottom Scanner Effect */}
-                                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary/20 to-transparent blur-sm animate-[pulse_3s_infinite] pointer-events-none" />
+                                            {/* Subtle Grounding Glow */}
+                                            <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-amber-200/10 to-transparent pointer-events-none" />
                                         </div>
                                     </div>
                                 )}
