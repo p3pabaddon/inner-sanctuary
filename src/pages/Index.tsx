@@ -8,6 +8,7 @@ import AboutSection from "@/components/AboutSection";
 import ServicesSection from "@/components/ServicesSection";
 import MethodsSection from "@/components/MethodsSection";
 import BlogSection from "@/components/BlogSection";
+import GuideSection from "@/components/GuideSection";
 import AppointmentSection from "@/components/AppointmentSection";
 import Footer from "@/components/Footer";
 import AdminPanel from "@/components/AdminPanel";
@@ -88,6 +89,7 @@ const Index = () => {
       <ServicesSection />
       <MethodsSection />
       <BlogSection />
+      <GuideSection />
       <AppointmentSection />
       <Footer />
 

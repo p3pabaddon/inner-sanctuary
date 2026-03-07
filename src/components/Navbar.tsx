@@ -34,9 +34,9 @@ const Navbar = ({ onPortalOpen }: { onPortalOpen: () => void }) => {
         }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
-        <a href="#" className="font-highlight text-2xl text-primary tracking-wide">
+        <Link to="/" className="font-highlight text-2xl text-primary tracking-wide">
           Denge Terapi
-        </a>
+        </Link>
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-6">
@@ -63,7 +63,7 @@ const Navbar = ({ onPortalOpen }: { onPortalOpen: () => void }) => {
           </div>
           <div className="flex items-center gap-4">
             <a
-              href="#appointment"
+              href="/#appointment"
               className="px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:shadow-elevated transition-all duration-300 hover:-translate-y-0.5"
             >
               Randevu Al
@@ -105,18 +105,29 @@ const Navbar = ({ onPortalOpen }: { onPortalOpen: () => void }) => {
           >
             <div className="p-6 flex flex-col gap-4">
               {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="text-foreground font-medium py-2"
-                >
-                  {link.label}
-                </a>
+                link.href.startsWith("/#") ? (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="text-foreground font-medium py-2"
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="text-foreground font-medium py-2"
+                  >
+                    {link.label}
+                  </Link>
+                )
               ))}
               <div className="flex flex-col gap-3 mt-2">
                 <a
-                  href="#appointment"
+                  href="/#appointment"
                   onClick={() => setMobileOpen(false)}
                   className="px-5 py-3 rounded-full bg-primary text-primary-foreground text-center font-medium"
                 >

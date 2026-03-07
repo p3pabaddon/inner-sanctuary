@@ -1,87 +1,110 @@
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { useRef, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
+import { Brain, Heart, Milestone, Users, ArrowRight } from "lucide-react";
 
 const methods = [
   {
     title: "Bilişsel Davranışçı Terapi (BDT)",
-    desc: "BDT, olumsuz düşünce kalıplarını ve davranışları belirlemenize ve değiştirmenize yardımcı olur. Yapılandırılmış seanslar aracılığıyla, zorlu durumları nasıl algıladığınızı ve bunlara nasıl tepki verdiğinizi yeniden şekillendirerek stres, kaygı ve depresyonu yönetmek için pratik stratejiler öğreneceksiniz.",
+    desc: "Olumsuz düşünce kalıplarını belirleyip değiştirerek stres ve kaygıyı yönetmek için pratik stratejiler sunar.",
+    icon: <Brain className="text-secondary" size={32} />,
+    color: "from-orange-500/20 to-secondary/10",
   },
   {
-    title: "Farkındalık Temelli Terapi",
-    desc: "Şu ana dair farkındalık geliştirmenize yardımcı olmak için farkındalık ve meditasyon tekniklerini terapiye entegre ediyorum. Bu yaklaşım ruminasyonu azaltır, duygusal düzenlemeyi artırır ve kendinizle daha derin bir bağ kurmanızı sağlar.",
+    title: "Farkındalık (Mindfulness)",
+    desc: "Şu ana odaklanarak duygusal düzenlemeyi artıran ve kendinizle derin bağ kurmanızı sağlayan teknikler.",
+    icon: <Heart className="text-rose-500" size={32} />,
+    color: "from-rose-500/20 to-pink-500/10",
   },
   {
-    title: "Travma Odaklı Terapi",
-    desc: "EMDR gibi kanıta dayalı yaklaşımlar kullanarak travma ve TSSB için özelleştirilmiş tedavi. Bu nazik süreç, travmatik deneyimleri işlemenize, sıkıntı verici belirtileri azaltmanıza ve güvenlik ve kontrol duygunuzu yeniden kazanmanıza yardımcı olur.",
+    title: "Travma Odaklı Terapi (EMDR)",
+    desc: "Travmatik deneyimleri işleyerek sıkıntı verici belirtileri azaltan ve kontrol duygunuzu geri kazandıran süreç.",
+    icon: <Milestone className="text-emerald-500" size={32} />,
+    color: "from-emerald-500/20 to-teal-500/10",
   },
   {
     title: "Aile Sistemleri Terapisi",
-    desc: "Sistemik yaklaşımlarla aile dinamiklerini anlama ve geliştirme. Bu yöntem, aile birimi içindeki etkileşim kalıplarını inceler ve daha sağlıklı iletişim ile daha güçlü ilişkilere doğru çalışır.",
+    desc: "Sistemik Yaklaşımlarla aile içi etkileşim kalıplarını iyileştiren ve iletişimi güçlendiren yöntemler.",
+    icon: <Users className="text-blue-500" size={32} />,
+    color: "from-blue-500/20 to-indigo-500/10",
   },
 ];
 
 const MethodsSection = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="methods" className="py-32" ref={ref}>
+    <section id="methods" className="py-32 bg-zinc-950/30" ref={ref}>
       <div className="container mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-16">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <motion.span
+            initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
+            className="text-sm font-black text-secondary uppercase tracking-[0.3em] block mb-4"
           >
-            <span className="text-sm font-body font-semibold text-secondary uppercase tracking-widest">Yaklaşım</span>
-            <h2 className="text-4xl md:text-5xl font-display font-bold text-foreground mt-4 mb-6">
-              Terapi Yöntemleri
-            </h2>
-            <p className="text-muted-foreground font-body leading-relaxed text-lg">
-              Benzersiz ihtiyaçlarınıza ve hedeflerinize yönelik olarak özenle seçilmiş ve birleştirilmiş çeşitli kanıta dayalı terapötik yaklaşımlar kullanıyorum.
-            </p>
-          </motion.div>
-
-          <div className="space-y-4">
-            {methods.map((method, i) => (
-              <motion.div
-                key={method.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.1 * i }}
-                className="glass rounded-2xl overflow-hidden"
-              >
-                <button
-                  onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                  className="w-full flex items-center justify-between p-6 text-left"
-                >
-                  <span className="font-display text-lg font-semibold text-foreground">{method.title}</span>
-                  <ChevronDown
-                    className={`w-5 h-5 text-primary transition-transform duration-300 ${
-                      openIndex === i ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                <AnimatePresence>
-                  {openIndex === i && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: "easeInOut" }}
-                      className="overflow-hidden"
-                    >
-                      <p className="px-6 pb-6 text-muted-foreground font-body leading-relaxed">
-                        {method.desc}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            ))}
-          </div>
+            YAKLAŞIM VE METOTLAR
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.1 }}
+            className="text-5xl md:text-7xl font-display font-black text-foreground mb-8 tracking-tighter"
+          >
+            İyileşme <span className="italic text-secondary">Yolculuğunuzda</span> Bilimsel Temeller
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2 }}
+            className="text-zinc-400 font-body text-xl leading-relaxed"
+          >
+            Her bireyin hikayesi benzersizdir. Bu yüzden tedavinizi size en uygun, kanıta dayalı yöntemlerle kişiselleştiriyorum.
+          </motion.p>
         </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {methods.map((method, i) => (
+            <motion.div
+              key={method.title}
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
+              transition={{ delay: 0.1 * i, duration: 0.5 }}
+              whileHover={{ y: -10 }}
+              className="group relative"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${method.color} rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+
+              <div className="relative h-full bg-zinc-900/40 backdrop-blur-xl border border-white/5 p-10 rounded-[2.5rem] flex flex-col justify-between hover:border-white/10 transition-colors">
+                <div>
+                  <div className="mb-8 p-4 bg-black/40 rounded-2xl w-fit group-hover:scale-110 transition-transform duration-500">
+                    {method.icon}
+                  </div>
+                  <h3 className="text-2xl font-display font-bold text-white mb-4 leading-tight">
+                    {method.title}
+                  </h3>
+                  <p className="text-zinc-400 font-body leading-relaxed text-sm">
+                    {method.desc}
+                  </p>
+                </div>
+
+                <div className="mt-8 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-secondary group-hover:gap-4 transition-all opacity-0 group-hover:opacity-100 cursor-pointer">
+                  DETAYLI İNCELE <ArrowRight size={14} />
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.8 }}
+          className="mt-20 p-12 bg-gradient-to-r from-secondary/10 via-transparent to-secondary/10 rounded-[3rem] border border-white/5 text-center"
+        >
+          <p className="text-zinc-500 italic font-body max-w-2xl mx-auto">
+            "Sadece semptomları değil, kök nedenleri anlamaya odaklanan bir bütünsel yaklaşımla çalışıyoruz."
+          </p>
+        </motion.div>
       </div>
     </section>
   );
