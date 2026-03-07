@@ -57,3 +57,16 @@ CREATE POLICY "Admin hizmetleri yönetebilir" ON public.services FOR ALL USING (
 
 CREATE POLICY "Herkes ayarları görebilir" ON public.site_config FOR SELECT USING (true);
 CREATE POLICY "Admin ayarları yönetebilir" ON public.site_config FOR ALL USING (true);
+
+-- 6. Benzersizlik Kısıtlaması (Hizmet Adı için)
+ALTER TABLE public.services ADD CONSTRAINT services_name_key UNIQUE (name);
+
+-- 7. Mevcut Hizmetlerin Başlangıç Verisi (Seed Data)
+INSERT INTO public.services (name, description, price, duration)
+VALUES 
+('Bireysel Terapi', 'Kişisel gelişim hedeflerinize ve ihtiyaçlarınıza özel olarak tasarlanmış birebir seanslar.', 850, '50'),
+('Çift Terapisi', 'Geliştirilmiş iletişim ve anlayış yoluyla ilişkinizi güçlendirin.', 1200, '75'),
+('Kaygı Tedavisi', 'Kaygıyı yönetmek ve hayatınızın kontrolünü yeniden ele almak için kanıta dayalı yaklaşımlar.', 850, '50'),
+('Depresyon Terapisi', 'Zor zamanlarda ışık ve motivasyon bulmanıza yardımcı olacak şefkatli destek.', 850, '50'),
+('Online Terapi', 'Güvenli video görüşmeleri ile evinizin konforunda profesyonel terapi.', 750, '50')
+ON CONFLICT (name) DO NOTHING;

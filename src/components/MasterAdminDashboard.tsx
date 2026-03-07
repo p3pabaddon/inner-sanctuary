@@ -608,10 +608,127 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                                 )}
 
                                 {subView === "map" && (
-                                    <div className="flex flex-col items-center justify-center h-full text-center space-y-8">
-                                        <Map size={120} className="text-secondary opacity-50" />
-                                        <h4 className="text-3xl font-black uppercase italic italic tracking-tighter">Lokasyon Bazlı <span className="text-secondary not-italic">Isı Haritası</span></h4>
-                                        <p className="text-zinc-500 max-w-lg leading-relaxed">Şu anda sistem trafiğinin %94'ü Türkiye üzerinden (Istanbul, Ankara, İzmir odaklı) gelmektedir. Bir sonraki fazda şehir bazlı detaylı ısı haritası devreye alınacaktır.</p>
+                                    <div className="relative h-full flex flex-col items-center justify-center p-4 lg:p-12 overflow-hidden">
+                                        {/* Background Cosmic Glow */}
+                                        <div className="absolute inset-0 bg-secondary/5 blur-[150px] rounded-full scale-150 animate-pulse pointer-events-none" />
+
+                                        <div className="relative w-full max-w-5xl aspect-[16/9] bg-black/40 backdrop-blur-3xl rounded-[4rem] border border-white/5 p-10 flex flex-col lg:flex-row gap-12 overflow-hidden shadow-2xl">
+
+                                            {/* Header Overlay */}
+                                            <div className="absolute top-10 left-10 z-20">
+                                                <h4 className="text-4xl font-black uppercase italic tracking-tighter text-white">Global <span className="text-secondary not-italic">Veri Küresi</span></h4>
+                                                <div className="flex items-center gap-3 text-[10px] text-zinc-500 font-bold uppercase tracking-[0.3em] mt-3">
+                                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                                                    PROXIMA_CORE_NETWORK v4.2
+                                                </div>
+                                            </div>
+
+                                            {/* Globe Visualization Area */}
+                                            <div className="flex-1 relative flex items-center justify-center min-h-[400px]">
+                                                {/* 3D Globe Container */}
+                                                <div className="relative w-[350px] h-[350px] lg:w-[500px] lg:h-[500px]">
+                                                    {/* Outer Atmosphere Glow */}
+                                                    <div className="absolute inset-0 bg-secondary/10 rounded-full blur-[60px] animate-pulse" />
+
+                                                    {/* The Globe SVG */}
+                                                    <motion.svg
+                                                        viewBox="0 0 100 100"
+                                                        className="w-full h-full relative z-10 drop-shadow-[0_0_30px_rgba(249,123,34,0.2)]"
+                                                        animate={{ rotate: 360 }}
+                                                        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                                                    >
+                                                        {/* Globe Base */}
+                                                        <circle cx="50" cy="50" r="48" fill="#0a0a0a" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+
+                                                        {/* Latitude/Longitude Lines */}
+                                                        <g opacity="0.1">
+                                                            {[10, 20, 30, 40, 50, 60, 70, 80, 90].map(x => (
+                                                                <ellipse key={`lat-${x}`} cx="50" cy="50" rx={Math.sqrt(2500 - (x - 50) * (x - 50))} ry="48" fill="none" stroke="white" strokeWidth="0.2" />
+                                                            ))}
+                                                            {[10, 20, 30, 40, 50, 60, 70, 80, 90].map(y => (
+                                                                <ellipse key={`lon-${y}`} cx="50" cy="50" rx="48" ry={Math.sqrt(2500 - (y - 50) * (y - 50))} fill="none" stroke="white" strokeWidth="0.2" />
+                                                            ))}
+                                                        </g>
+
+                                                        {/* Pseudo-3D Continents (Moving shapes to simulate rotation) */}
+                                                        <motion.g
+                                                            animate={{ x: [-20, 20, -20] }}
+                                                            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+                                                        >
+                                                            {/* Europe & Africa Cluster */}
+                                                            <path d="M45,20 Q55,25 60,40 Q58,60 50,80 Q40,75 35,60 Q30,40 45,20" fill="rgba(255,255,255,0.08)" />
+                                                            {/* Americas Cluster */}
+                                                            <path d="M10,30 Q20,35 15,55 Q18,75 10,85 Q0,70 5,45 Z" fill="rgba(255,255,255,0.05)" />
+                                                            {/* Asia Cluster */}
+                                                            <path d="M70,15 Q90,20 95,45 Q90,70 75,85 Q65,65 70,15" fill="rgba(255,255,255,0.06)" />
+                                                        </motion.g>
+
+                                                        {/* Hotspots (Static in coordinate space but rotate with globe) */}
+                                                        {[
+                                                            { x: 52, y: 35, label: "Istanbul", pulse: true },
+                                                            { x: 75, y: 30, label: "Tokyo", pulse: false },
+                                                            { x: 25, y: 40, label: "London", pulse: false },
+                                                            { x: 20, y: 65, label: "NY", pulse: false },
+                                                            { x: 60, y: 70, label: "Dubai", pulse: true }
+                                                        ].map((pos, i) => (
+                                                            <g key={i}>
+                                                                {pos.pulse && (
+                                                                    <circle cx={pos.x} cy={pos.y} r="2.5" className="fill-secondary/30">
+                                                                        <animate attributeName="r" values="1;3;1" dur="2s" repeatCount="indefinite" />
+                                                                        <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite" />
+                                                                    </circle>
+                                                                )}
+                                                                <circle cx={pos.x} cy={pos.y} r="0.8" className="fill-secondary shadow-[0_0_10px_secondary]" />
+                                                            </g>
+                                                        ))}
+                                                    </motion.svg>
+
+                                                    {/* Floating Labels Overlay (Non-rotating) */}
+                                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
+                                                        <div className="absolute top-[35%] left-[55%] bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-secondary/30 scale-75 lg:scale-100">
+                                                            <span className="text-[10px] font-black text-secondary uppercase tracking-widest whitespace-nowrap">Aktif Seans: Istanbul</span>
+                                                        </div>
+                                                        <div className="absolute bottom-[25%] left-[65%] bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-emerald-500/30 opacity-60 scale-75">
+                                                            <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest whitespace-nowrap">Stabil: Dubai Node</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Orbital Arcs */}
+                                                <div className="absolute border-[0.5px] border-secondary/20 rounded-full w-[450px] h-[450px] lg:w-[650px] lg:h-[650px] animate-[spin_40s_linear_infinite] pointer-events-none" />
+                                                <div className="absolute border-[0.5px] border-blue-500/10 rounded-full w-[500px] h-[500px] lg:w-[750px] lg:h-[750px] animate-[spin_60s_linear_infinite_reverse] pointer-events-none" />
+                                            </div>
+
+                                            {/* Data Panel Right */}
+                                            <div className="w-full lg:w-80 flex flex-col gap-6 relative z-10">
+                                                <div className="bg-zinc-950/80 p-6 rounded-3xl border border-white/5 space-y-4">
+                                                    <h5 className="text-secondary text-[10px] font-black uppercase tracking-widest border-b border-white/5 pb-3">Erişim Metrikleri</h5>
+                                                    {[
+                                                        { label: "Türkiye", val: "%82", color: "secondary" },
+                                                        { label: "Avrupa", val: "%12", color: "blue-500" },
+                                                        { label: "Orta Doğu", val: "%4", color: "emerald-500" },
+                                                        { label: "Diğer", val: "%2", color: "zinc-600" }
+                                                    ].map((item, i) => (
+                                                        <div key={i} className="flex justify-between items-center group cursor-help">
+                                                            <span className="text-xs text-zinc-500 font-bold group-hover:text-zinc-300 transition-colors">{item.label}</span>
+                                                            <span className={`text-sm font-black text-${item.color}`}>{item.val}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                <div className="flex-1 bg-zinc-950/80 p-6 rounded-3xl border border-white/5 flex flex-col justify-between overflow-hidden relative group">
+                                                    <div className="absolute inset-0 bg-gradient-to-br from-secondary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                    <div>
+                                                        <span className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">Sistem Tahmini</span>
+                                                        <p className="mt-3 text-sm text-zinc-400 leading-relaxed font-body italic">"Uluslararası trafik geçen aya oranla <span className="text-emerald-500 font-bold">%15 artış</span> gösteriyor. Global CDN optimizasyonu önerilir."</p>
+                                                    </div>
+                                                    <button className="w-full mt-6 py-4 bg-zinc-900 hover:bg-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border border-white/5 hover:border-secondary/30">Detaylı Raporu İndir</button>
+                                                </div>
+                                            </div>
+
+                                            {/* Bottom Scanner Effect */}
+                                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary/20 to-transparent blur-sm animate-[pulse_3s_infinite]" />
+                                        </div>
                                     </div>
                                 )}
                             </div>
