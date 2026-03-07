@@ -678,15 +678,17 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
 
                                                         {/* City Hotspots */}
                                                         {[
-                                                            { id: 'Istanbul', x: 180, y: 130, label: "İstanbul" },
-                                                            { id: 'Ankara', x: 450, y: 220, label: "Ankara" },
-                                                            { id: 'Izmir', x: 80, y: 250, label: "İzmir" },
-                                                            { id: 'Antalya', x: 300, y: 380, label: "Antalya" },
-                                                            { id: 'Bursa', x: 190, y: 180, label: "Bursa" },
-                                                            { id: 'Adana', x: 550, y: 360, label: "Adana" },
-                                                            { id: 'Trabzon', x: 750, y: 120, label: "Trabzon" },
-                                                            { id: 'Gaziantep', x: 650, y: 380, label: "Gaziantep" },
-                                                            { id: 'Diyarbakir', x: 820, y: 330, label: "Diyarbakır" },
+                                                            { id: 'Istanbul', x: 205, y: 135, label: "İstanbul" },
+                                                            { id: 'Ankara', x: 455, y: 220, label: "Ankara" },
+                                                            { id: 'Izmir', x: 100, y: 260, label: "İzmir" },
+                                                            { id: 'Antalya', x: 315, y: 395, label: "Antalya" },
+                                                            { id: 'Bursa', x: 215, y: 185, label: "Bursa" },
+                                                            { id: 'Adana', x: 560, y: 375, label: "Adana" },
+                                                            { id: 'Trabzon', x: 755, y: 120, label: "Trabzon" },
+                                                            { id: 'Gaziantep', x: 670, y: 405, label: "Gaziantep" },
+                                                            { id: 'Diyarbakir', x: 840, y: 355, label: "Diyarbakır" },
+                                                            { id: 'Eskisehir', x: 340, y: 215, label: "Eskişehir" },
+                                                            { id: 'Samsun', x: 570, y: 105, label: "Samsun" },
                                                         ].map((city) => {
                                                             const count = activeUsersByCity[city.id] || 0;
                                                             return (
