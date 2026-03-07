@@ -101,6 +101,10 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
         { time: "01:22:45", event: "VERİTABANI_BAĞLANTISI_OK", id: "db_conn" }
     ]);
 
+    // Globe Interactivity State
+    const [globeRotation, setGlobeRotation] = useState({ x: 0, y: 0 });
+    const [selectedHotspot, setSelectedHotspot] = useState<any>(null);
+
     useEffect(() => {
         fetchInitialData();
 
@@ -619,84 +623,142 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                                                 <h4 className="text-4xl font-black uppercase italic tracking-tighter text-white">Global <span className="text-secondary not-italic">Veri Küresi</span></h4>
                                                 <div className="flex items-center gap-3 text-[10px] text-zinc-500 font-bold uppercase tracking-[0.3em] mt-3">
                                                     <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                                                    PROXIMA_CORE_NETWORK v4.2
+                                                    DOKUN_VE_SURUKLE_MODU v4.5
                                                 </div>
                                             </div>
 
                                             {/* Globe Visualization Area */}
                                             <div className="flex-1 relative flex items-center justify-center min-h-[400px]">
                                                 {/* 3D Globe Container */}
-                                                <div className="relative w-[350px] h-[350px] lg:w-[500px] lg:h-[500px]">
+                                                <motion.div
+                                                    className="relative w-[350px] h-[350px] lg:w-[500px] lg:h-[500px] cursor-grab active:cursor-grabbing"
+                                                    drag
+                                                    dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+                                                    dragElastic={0}
+                                                    onDrag={(e, info) => {
+                                                        setGlobeRotation({
+                                                            x: globeRotation.x + info.delta.x * 0.5,
+                                                            y: globeRotation.y + info.delta.y * 0.5
+                                                        });
+                                                    }}
+                                                >
                                                     {/* Outer Atmosphere Glow */}
-                                                    <div className="absolute inset-0 bg-secondary/10 rounded-full blur-[60px] animate-pulse" />
+                                                    <div className="absolute inset-0 bg-secondary/10 rounded-full blur-[60px] animate-pulse pointer-events-none" />
 
                                                     {/* The Globe SVG */}
-                                                    <motion.svg
+                                                    <svg
                                                         viewBox="0 0 100 100"
-                                                        className="w-full h-full relative z-10 drop-shadow-[0_0_30px_rgba(249,123,34,0.2)]"
-                                                        animate={{ rotate: 360 }}
-                                                        transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+                                                        className="w-full h-full relative z-10 drop-shadow-[0_0_30px_rgba(249,123,34,0.2)] pointer-events-none"
                                                     >
                                                         {/* Globe Base */}
                                                         <circle cx="50" cy="50" r="48" fill="#0a0a0a" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
 
                                                         {/* Latitude/Longitude Lines */}
-                                                        <g opacity="0.1">
+                                                        <motion.g
+                                                            opacity="0.1"
+                                                            style={{ rotate: globeRotation.x * 0.2 }}
+                                                        >
                                                             {[10, 20, 30, 40, 50, 60, 70, 80, 90].map(x => (
                                                                 <ellipse key={`lat-${x}`} cx="50" cy="50" rx={Math.sqrt(2500 - (x - 50) * (x - 50))} ry="48" fill="none" stroke="white" strokeWidth="0.2" />
                                                             ))}
                                                             {[10, 20, 30, 40, 50, 60, 70, 80, 90].map(y => (
                                                                 <ellipse key={`lon-${y}`} cx="50" cy="50" rx="48" ry={Math.sqrt(2500 - (y - 50) * (y - 50))} fill="none" stroke="white" strokeWidth="0.2" />
                                                             ))}
-                                                        </g>
-
-                                                        {/* Pseudo-3D Continents (Moving shapes to simulate rotation) */}
-                                                        <motion.g
-                                                            animate={{ x: [-20, 20, -20] }}
-                                                            transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-                                                        >
-                                                            {/* Europe & Africa Cluster */}
-                                                            <path d="M45,20 Q55,25 60,40 Q58,60 50,80 Q40,75 35,60 Q30,40 45,20" fill="rgba(255,255,255,0.08)" />
-                                                            {/* Americas Cluster */}
-                                                            <path d="M10,30 Q20,35 15,55 Q18,75 10,85 Q0,70 5,45 Z" fill="rgba(255,255,255,0.05)" />
-                                                            {/* Asia Cluster */}
-                                                            <path d="M70,15 Q90,20 95,45 Q90,70 75,85 Q65,65 70,15" fill="rgba(255,255,255,0.06)" />
                                                         </motion.g>
 
-                                                        {/* Hotspots (Static in coordinate space but rotate with globe) */}
-                                                        {[
-                                                            { x: 52, y: 35, label: "Istanbul", pulse: true },
-                                                            { x: 75, y: 30, label: "Tokyo", pulse: false },
-                                                            { x: 25, y: 40, label: "London", pulse: false },
-                                                            { x: 20, y: 65, label: "NY", pulse: false },
-                                                            { x: 60, y: 70, label: "Dubai", pulse: true }
-                                                        ].map((pos, i) => (
-                                                            <g key={i}>
-                                                                {pos.pulse && (
-                                                                    <circle cx={pos.x} cy={pos.y} r="2.5" className="fill-secondary/30">
-                                                                        <animate attributeName="r" values="1;3;1" dur="2s" repeatCount="indefinite" />
-                                                                        <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite" />
-                                                                    </circle>
-                                                                )}
-                                                                <circle cx={pos.x} cy={pos.y} r="0.8" className="fill-secondary shadow-[0_0_10px_secondary]" />
-                                                            </g>
-                                                        ))}
-                                                    </motion.svg>
+                                                        {/* Pseudo-3D Continents */}
+                                                        <motion.g
+                                                            style={{ x: (globeRotation.x % 100) - 10, y: globeRotation.y * 0.1 }}
+                                                        >
+                                                            {/* Continents rendered twice for seamless loop */}
+                                                            {[0, 100, -100].map(offset => (
+                                                                <g key={offset} transform={`translate(${offset}, 0)`}>
+                                                                    <path d="M45,20 Q55,25 60,40 Q58,60 50,80 Q40,75 35,60 Q30,40 45,20" fill="rgba(255,255,255,0.12)" />
+                                                                    <path d="M10,30 Q20,35 15,55 Q18,75 10,85 Q0,70 5,45 Z" fill="rgba(255,255,255,0.08)" />
+                                                                    <path d="M70,15 Q90,20 95,45 Q90,70 75,85 Q65,65 70,15" fill="rgba(255,255,255,0.1)" />
+                                                                </g>
+                                                            ))}
+                                                        </motion.g>
 
-                                                    {/* Floating Labels Overlay (Non-rotating) */}
-                                                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20">
-                                                        <div className="absolute top-[35%] left-[55%] bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-secondary/30 scale-75 lg:scale-100">
-                                                            <span className="text-[10px] font-black text-secondary uppercase tracking-widest whitespace-nowrap">Aktif Seans: Istanbul</span>
-                                                        </div>
-                                                        <div className="absolute bottom-[25%] left-[65%] bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-emerald-500/30 opacity-60 scale-75">
-                                                            <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest whitespace-nowrap">Stabil: Dubai Node</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                        {/* Hotspots */}
+                                                        <motion.g style={{ x: globeRotation.x % 100 }}>
+                                                            {[0, 100, -100].map(offset => (
+                                                                <g key={offset} transform={`translate(${offset}, 0)`}>
+                                                                    {[
+                                                                        { x: 52, y: 35, label: "Istanbul", clicks: 1240, status: "Aktif", users: 42 },
+                                                                        { x: 75, y: 30, label: "Tokyo", clicks: 850, status: "Stabil", users: 12 },
+                                                                        { x: 25, y: 40, label: "London", clicks: 2100, status: "Yoğun", users: 85 },
+                                                                        { x: 20, y: 65, label: "New York", clicks: 3400, status: "Yoğun", users: 112 },
+                                                                        { x: 60, y: 70, label: "Dubai", clicks: 620, status: "Stabil", users: 8 }
+                                                                    ].map((pos, i) => (
+                                                                        <g
+                                                                            key={i}
+                                                                            className="pointer-events-auto cursor-pointer"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                setSelectedHotspot(pos);
+                                                                            }}
+                                                                        >
+                                                                            <circle cx={pos.x} cy={pos.y} r="3" className="fill-transparent hover:fill-secondary/20 transition-colors" />
+                                                                            <circle cx={pos.x} cy={pos.y} r="0.8" className="fill-secondary shadow-[0_0_10px_secondary]" />
+                                                                            <circle cx={pos.x} cy={pos.y} r="1.5" className="fill-secondary/30">
+                                                                                <animate attributeName="r" values="1;2.5;1" dur="2s" repeatCount="indefinite" />
+                                                                                <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite" />
+                                                                            </circle>
+                                                                        </g>
+                                                                    ))}
+                                                                </g>
+                                                            ))}
+                                                        </motion.g>
+                                                    </svg>
+                                                </motion.div>
 
-                                                {/* Orbital Arcs */}
-                                                <div className="absolute border-[0.5px] border-secondary/20 rounded-full w-[450px] h-[450px] lg:w-[650px] lg:h-[650px] animate-[spin_40s_linear_infinite] pointer-events-none" />
-                                                <div className="absolute border-[0.5px] border-blue-500/10 rounded-full w-[500px] h-[500px] lg:w-[750px] lg:h-[750px] animate-[spin_60s_linear_infinite_reverse] pointer-events-none" />
+                                                {/* Hotspot Detail Tooltip (Absolute overlay) */}
+                                                <AnimatePresence>
+                                                    {selectedHotspot && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                                                            className="absolute z-50 bg-black/90 backdrop-blur-2xl border border-secondary/50 p-6 rounded-3xl shadow-2xl min-w-[240px]"
+                                                        >
+                                                            <div className="flex justify-between items-start mb-4">
+                                                                <div>
+                                                                    <h6 className="text-secondary text-lg font-black uppercase italic">{selectedHotspot.label}</h6>
+                                                                    <span className="text-[10px] text-zinc-500 font-bold tracking-widest uppercase">Bölgesel Analiz</span>
+                                                                </div>
+                                                                <button onClick={() => setSelectedHotspot(null)} className="text-zinc-500 hover:text-white transition-colors">
+                                                                    <X size={16} />
+                                                                </button>
+                                                            </div>
+                                                            <div className="space-y-3">
+                                                                <div className="flex justify-between items-center text-sm">
+                                                                    <span className="text-zinc-400">Aktif Kullanıcı</span>
+                                                                    <span className="text-white font-black">{selectedHotspot.users} Kişi</span>
+                                                                </div>
+                                                                <div className="flex justify-between items-center text-sm">
+                                                                    <span className="text-zinc-400">Günlük Hit</span>
+                                                                    <span className="text-white font-black">{selectedHotspot.clicks.toLocaleString()}</span>
+                                                                </div>
+                                                                <div className="flex justify-between items-center text-sm">
+                                                                    <span className="text-zinc-400">Durum</span>
+                                                                    <span className={`font-black ${selectedHotspot.status === 'Yoğun' ? 'text-orange-500' : 'text-emerald-500'}`}>{selectedHotspot.status}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="mt-6 h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
+                                                                <motion.div
+                                                                    className="h-full bg-secondary"
+                                                                    initial={{ width: 0 }}
+                                                                    animate={{ width: `${(selectedHotspot.users / 150) * 100}%` }}
+                                                                />
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+
+                                                {/* Orbital Arcs (Fixed) */}
+                                                <div className="absolute border-[0.5px] border-secondary/10 rounded-full w-[450px] h-[450px] lg:w-[650px] lg:h-[650px] pointer-events-none" />
+                                                <div className="absolute border-[0.5px] border-blue-500/5 rounded-full w-[500px] h-[500px] lg:w-[750px] lg:h-[750px] pointer-events-none" />
                                             </div>
 
                                             {/* Data Panel Right */}
@@ -727,7 +789,7 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                                             </div>
 
                                             {/* Bottom Scanner Effect */}
-                                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary/20 to-transparent blur-sm animate-[pulse_3s_infinite]" />
+                                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-secondary/20 to-transparent blur-sm animate-[pulse_3s_infinite] pointer-events-none" />
                                         </div>
                                     </div>
                                 )}
