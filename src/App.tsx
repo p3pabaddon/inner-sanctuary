@@ -14,14 +14,46 @@ import Compliance from "./pages/Compliance";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
-
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
 import MasterAdminDashboard from "@/components/MasterAdminDashboard";
-import { useState } from "react";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [isMasterAdminOpen, setIsMasterAdminOpen] = useState(false);
+
+  useEffect(() => {
+    // Real-time Heartbeat & Location Tracking
+    const updateActivity = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Try to get city from IP if not already set this session
+        const lastCity = sessionStorage.getItem('user_city');
+        let city = lastCity;
+
+        if (!city) {
+          const res = await fetch('https://ipapi.co/json/');
+          const data = await res.json();
+          city = data.city || 'Bilinmiyor';
+          sessionStorage.setItem('user_city', city);
+        }
+
+        await supabase.from('profiles').update({
+          last_seen: new Date().toISOString(),
+          last_known_city: city
+        }).eq('id', user.id);
+      } catch (e) {
+        console.error("Heartbeat error:", e);
+      }
+    };
+
+    updateActivity();
+    const interval = setInterval(updateActivity, 120000); // Every 2 mins
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

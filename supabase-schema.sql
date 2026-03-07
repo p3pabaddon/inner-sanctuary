@@ -112,8 +112,26 @@ INSERT INTO site_config (id, site_title, site_description)
 VALUES ('global', 'İçsel Sığınak', 'Profesyonel Psikolojik Danışmanlık ve Terapi')
 ON CONFLICT (id) DO NOTHING;
 
--- Enable Realtime for Messages
+-- Enable Realtime for Messages and Profiles
 ALTER PUBLICATION supabase_realtime ADD TABLE messages;
+ALTER TABLE public.profiles REPLICA IDENTITY FULL;
+ALTER PUBLICATION supabase_realtime ADD TABLE profiles;
+
+-- 8. GÜVENLİK VE ŞEMA ONARIMI (client_id Hatası İçin)
+DO $$ 
+BEGIN 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='appointments' AND column_name='client_id') THEN
+        ALTER TABLE public.appointments ADD COLUMN client_id UUID;
+    END IF;
+END $$;
+
+-- 9. GERÇEK ZAMANLI KONUM TAKİBİ
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_known_city TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_seen TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now());
+
+-- Hızlı sorgu için index
+CREATE INDEX IF NOT EXISTS profiles_last_seen_idx ON public.profiles (last_seen);
+CREATE INDEX IF NOT EXISTS profiles_last_known_city_idx ON public.profiles (last_known_city);
 
 -- Trigger to create a profile on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()

@@ -30,18 +30,24 @@ const AppointmentSection = () => {
     if (step === 2) {
       setLoading(true);
       try {
+        const appointmentData: any = {
+          full_name: name,
+          email: email,
+          type: selectedType,
+          date: selectedDate,
+          time: selectedTime,
+          status: 'Gelecek'
+        };
+
+        // Try to include client_id if user is logged in
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          appointmentData.client_id = user.id;
+        }
+
         const { error } = await supabase
           .from('appointments')
-          .insert([
-            {
-              full_name: name,
-              email: email,
-              type: selectedType,
-              date: selectedDate,
-              time: selectedTime,
-              status: 'Gelecek'
-            }
-          ]);
+          .insert([appointmentData]);
 
         if (error) throw error;
         setStep(3);
