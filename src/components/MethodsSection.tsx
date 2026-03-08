@@ -34,13 +34,13 @@ const MethodsSection = () => {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="methods" className="py-32 bg-zinc-950/30" ref={ref}>
+    <section id="methods" className="py-32 bg-accent/30 relative noise-overlay" ref={ref}>
       <div className="container mx-auto px-6">
         <div className="text-center max-w-3xl mx-auto mb-20">
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            className="text-sm font-black text-secondary uppercase tracking-[0.3em] block mb-4"
+            className="text-sm font-black text-secondary uppercase tracking-[0.3em] block mb-4 font-body"
           >
             YAKLAŞIM VE METOTLAR
           </motion.span>
@@ -56,7 +56,7 @@ const MethodsSection = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2 }}
-            className="text-zinc-400 font-body text-xl leading-relaxed"
+            className="text-muted-foreground font-body text-xl leading-relaxed"
           >
             Her bireyin hikayesi benzersizdir. Bu yüzden tedavinizi size en uygun, kanıta dayalı yöntemlerle kişiselleştiriyorum.
           </motion.p>
@@ -74,15 +74,15 @@ const MethodsSection = () => {
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${method.color} rounded-[2.5rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
 
-              <div className="relative h-full bg-zinc-900/40 backdrop-blur-xl border border-white/5 p-10 rounded-[2.5rem] flex flex-col justify-between hover:border-white/10 transition-colors">
+              <div className="relative h-full glass backdrop-blur-xl border-muted p-10 rounded-[2.5rem] flex flex-col justify-between hover:border-secondary/20 transition-all duration-500 shadow-card">
                 <div>
-                  <div className="mb-8 p-4 bg-black/40 rounded-2xl w-fit group-hover:scale-110 transition-transform duration-500">
+                  <div className="mb-8 p-4 bg-secondary/10 rounded-2xl w-fit group-hover:scale-110 transition-transform duration-500 group-hover:bg-secondary/20">
                     {method.icon}
                   </div>
-                  <h3 className="text-2xl font-display font-bold text-white mb-4 leading-tight">
+                  <h3 className="text-2xl font-display font-bold text-foreground mb-4 leading-tight">
                     {method.title}
                   </h3>
-                  <p className="text-zinc-400 font-body leading-relaxed text-sm">
+                  <p className="text-muted-foreground font-body leading-relaxed text-sm">
                     {method.desc}
                   </p>
                 </div>
@@ -99,9 +99,9 @@ const MethodsSection = () => {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 0.8 }}
-          className="mt-20 p-12 bg-gradient-to-r from-secondary/10 via-transparent to-secondary/10 rounded-[3rem] border border-white/5 text-center"
+          className="mt-20 p-12 bg-gradient-to-r from-secondary/5 via-transparent to-secondary/5 rounded-[3rem] border border-muted text-center"
         >
-          <p className="text-zinc-500 italic font-body max-w-2xl mx-auto">
+          <p className="text-muted-foreground italic font-body max-w-2xl mx-auto">
             "Sadece semptomları değil, kök nedenleri anlamaya odaklanan bir bütünsel yaklaşımla çalışıyoruz."
           </p>
         </motion.div>

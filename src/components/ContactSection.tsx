@@ -38,7 +38,7 @@ const ContactSection = () => {
           >
             <div className="space-y-6">
               {contactInfos.map((item, index) => (
-                <div key={index} className="flex gap-4 p-4 rounded-2xl bg-white/5 dark:bg-zinc-900/50 border border-white/10 dark:border-zinc-800 shadow-sm backdrop-blur-sm">
+                <div key={index} className="flex gap-4 p-4 rounded-2xl glass border-muted shadow-sm backdrop-blur-sm">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                     <item.icon className="w-5 h-5 text-primary" />
                   </div>
@@ -72,15 +72,15 @@ const ContactSection = () => {
             initial={{ opacity: 0, x: 40 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ delay: 0.4 }}
-            className="bg-white/5 dark:bg-zinc-900/50 p-8 rounded-3xl border border-white/10 dark:border-zinc-800 shadow-sm backdrop-blur-lg"
+            className="glass p-8 rounded-3xl border-muted shadow-soft backdrop-blur-lg"
           >
             <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
               <div className="grid md:grid-cols-2 gap-4">
-                <Input placeholder="Adınız" className="bg-white/5 dark:bg-zinc-800/50 border-white/10 dark:border-zinc-700/50" />
-                <Input placeholder="E-posta" type="email" className="bg-white/5 dark:bg-zinc-800/50 border-white/10 dark:border-zinc-700/50" />
+                <Input placeholder="Adınız" className="bg-white/10 dark:bg-zinc-800/50 border-muted focus:border-primary" />
+                <Input placeholder="E-posta" type="email" className="bg-white/10 dark:bg-zinc-800/50 border-muted focus:border-primary" />
               </div>
-              <Input placeholder="Konu" className="bg-white/5 dark:bg-zinc-800/50 border-white/10 dark:border-zinc-700/50" />
-              <Textarea placeholder="Mesajınız..." className="min-h-[120px] bg-white/5 dark:bg-zinc-800/50 border-white/10 dark:border-zinc-700/50" />
+              <Input placeholder="Konu" className="bg-white/10 dark:bg-zinc-800/50 border-muted focus:border-primary" />
+              <Textarea placeholder="Mesajınız..." className="min-h-[120px] bg-white/10 dark:bg-zinc-800/50 border-muted focus:border-primary" />
               <Button className="w-full h-12 text-lg font-medium">Mesaj Gönder</Button>
             </form>
           </motion.div>

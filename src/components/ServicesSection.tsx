@@ -4,19 +4,24 @@ import { Brain, Heart, Users, CloudRain, Monitor, Sparkles } from "lucide-react"
 import { supabase } from "@/lib/supabase";
 
 const staticServices = [
-  { icon: Brain, title: "Bireysel Terapi", desc: "Kişisel gelişim hedeflerinize ve ihtiyaçlarınıza özel olarak tasarlanmış birebir seanslar." },
-  { icon: Heart, title: "Çift Terapisi", desc: "Geliştirilmiş iletişim ve anlayış yoluyla ilişkinizi güçlendirin." },
-  { icon: CloudRain, title: "Kaygı Tedavisi", desc: "Kaygıyı yönetmek ve hayatınızın kontrolünü yeniden ele almak için kanıta dayalı yaklaşımlar." },
-  { icon: Users, title: "Depresyon Terapisi", desc: "Zor zamanlarda ışık ve motivasyon bulmanıza yardımcı olacak şefkatli destek." },
-  { icon: Monitor, title: "Online Terapi", desc: "Güvenli video görüşmeleri ile evinizin konforunda profesyonel terapi." },
+  { icon: Brain, title: "Bireysel Terapi", desc: "Kişisel gelişim ve ruh sağlığı yolculuğunuzda size özel birebir destek." },
+  { icon: Users, title: "Çift ve Aile Terapisi", desc: "İlişkilerdeki dengeleri yeniden kurmak ve iletişimi güçlendirmek için profesyonel rehberlik." },
+  { icon: Sparkles, title: "Çocuk ve Ergen Terapisi", desc: "Genç zihinlerin dünyasını anlamak ve gelişim süreçlerinde onlara eşlik etmek." },
+  { icon: CloudRain, title: "EMDR Terapisi", desc: "Geçmişin izlerini silmek ve travmatik anıları sağlıklı bir şekilde işlemek için güçlü bir yöntem." },
+  { icon: Brain, title: "Bilişsel Davranışçı Terapi", desc: "Düşünce ve davranış kalıplarınızı değiştirerek daha sağlıklı bir yaşam kurgulayın." },
 ];
 
 const iconMap: { [key: string]: any } = {
   "Bireysel Terapi": Brain,
-  "Çift Terapisi": Heart,
-  "Kaygı Tedavisi": CloudRain,
-  "Depresyon Terapisi": Users,
-  "Online Terapi": Monitor,
+  "Çift ve Aile Terapisi": Users,
+  "Çocuk ve Ergen Terapisi": Sparkles,
+  "EMDR Terapisi": CloudRain,
+  "Bilişsel Davranışçı Terapi": Brain,
+  "Cinsel Terapi": Heart,
+  "Oyun Terapisi": Sparkles,
+  "Grup Terapisi": Users,
+  "Sınav Kaygısı Danışmanlığı": Brain,
+  "Online Psikolojik Destek": Monitor,
 };
 
 const ServicesSection = () => {

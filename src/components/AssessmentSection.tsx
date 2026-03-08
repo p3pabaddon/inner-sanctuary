@@ -128,8 +128,8 @@ const AssessmentSection = () => {
                                 exit={{ opacity: 0, x: -20 }}
                                 className="text-center"
                             >
-                                <div className="w-20 h-20 bg-accent dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-8 transition-colors">
-                                    <ClipboardCheck className="text-secondary dark:text-primary w-10 h-10" />
+                                <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-8 transition-colors">
+                                    <ClipboardCheck className="text-secondary w-10 h-10" />
                                 </div>
                                 <h3 className="text-2xl font-display font-bold mb-4">Kaygı ve Stres Ölçeği</h3>
                                 <p className="text-muted-foreground font-body mb-8">
@@ -169,7 +169,7 @@ const AssessmentSection = () => {
                                             <button
                                                 key={idx}
                                                 onClick={() => handleAnswer(idx)}
-                                                className="w-full p-4 rounded-xl border border-border dark:border-zinc-700 bg-white/50 dark:bg-zinc-800/50 hover:bg-white dark:hover:bg-zinc-800 hover:border-primary hover:text-primary transition-all duration-300 text-left font-body text-sm md:text-base group"
+                                                className="w-full p-4 rounded-xl border-muted bg-white/50 dark:bg-zinc-800/20 hover:bg-white dark:hover:bg-zinc-800/40 hover:border-primary hover:text-primary transition-all duration-300 text-left font-body text-sm md:text-base group shadow-sm"
                                             >
                                                 <div className="flex items-center justify-between">
                                                     {option}
@@ -206,7 +206,7 @@ const AssessmentSection = () => {
                                     </a>
                                     <button
                                         onClick={resetTest}
-                                        className="px-8 py-4 rounded-full glass border-border text-foreground font-medium flex items-center gap-2 justify-center hover:bg-white/50 transition-all duration-300"
+                                        className="px-8 py-4 rounded-full glass border-muted text-foreground font-medium flex items-center gap-2 justify-center hover:bg-white/50 transition-all duration-300"
                                     >
                                         <RefreshCcw size={18} /> Testi Tekrarla
                                     </button>
