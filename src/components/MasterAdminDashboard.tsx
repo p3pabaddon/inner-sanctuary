@@ -95,6 +95,7 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
     const [currentPost, setCurrentPost] = useState<any>(null);
     const [isEditingService, setIsEditingService] = useState(false);
     const [currentService, setCurrentService] = useState<any>(null);
+    const [serviceToDelete, setServiceToDelete] = useState<any>(null);
 
     const [stats, setStats] = useState({
         totalRevenue: "0",
@@ -320,51 +321,32 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
         setLoading(false);
     };
 
-    const handleDeleteService = async (serviceId: any) => {
-        // Trace 1: Function entry
-        console.log("Trace 1: handleDeleteService triggered with ID:", serviceId);
+    const handleDeleteService = async () => {
+        if (!serviceToDelete) return;
 
-        if (!serviceId) {
-            alert("Hata: Hizmet ID'si alınamadı!");
-            toast.error("ID bulunamadı.");
-            return;
-        }
-
-        // Trace 2: User confirmation
-        const ok = window.confirm("Bu hizmet sistemden KALICI olarak silinecektir. Devam edilsin mi? (ID: " + serviceId + ")");
-        if (!ok) {
-            console.log("Trace 2: User cancelled deletion");
-            return;
-        }
-
+        console.log("Action: Deleting service:", serviceToDelete.id);
         setLoading(true);
-        alert("Trace 3: Supabase bağlantısı başlıyor...");
-        console.log("Trace 3: Proceeding to Supabase call");
 
         try {
             const { error } = await supabase
                 .from('services')
                 .delete()
-                .eq('id', serviceId);
+                .eq('id', serviceToDelete.id);
 
             if (error) {
-                console.error("Trace 5: Supabase error", error);
-                alert("Veritabanı Hatası: " + error.message);
+                console.error("Deletion error:", error);
                 toast.error("Silme başarısız: " + error.message);
             } else {
-                alert("Trace 6: Silme işlemi başarılı!");
-                console.log("Trace 6: Deletion successful");
                 toast.success("Hizmet başarıyla silindi.");
                 await fetchInitialData();
+                setServiceToDelete(null);
                 setIsEditingService(false);
             }
         } catch (err: any) {
-            console.error("Trace 7: Runtime exception", err);
-            alert("Çalışma Zamanı Hatası: " + err.message);
+            console.error("Runtime exception:", err);
             toast.error("Sistem hatası oluştu.");
         } finally {
             setLoading(false);
-            console.log("Trace 8: Operation finished");
         }
     };
 
@@ -972,7 +954,7 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                                         <div className="flex flex-wrap gap-4 pt-10 border-t border-muted transition-all">
                                             <button onClick={() => setIsEditingService(false)} className="px-6 py-4 border border-muted rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white/40 transition-all active:scale-95 font-body text-muted-foreground mr-auto">İptal</button>
                                             <button
-                                                onClick={() => handleDeleteService(currentService.id)}
+                                                onClick={() => setServiceToDelete(currentService)}
                                                 className="px-6 py-4 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] transition-all active:scale-95 font-body flex items-center gap-2 border border-red-500/20"
                                             >
                                                 <Trash2 size={14} /> SİSTEMDEN KALDIR
@@ -1024,7 +1006,7 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                                                         <Edit3 size={14} /> DÜZENLE
                                                     </button>
                                                     <button
-                                                        onClick={(e) => { e.stopPropagation(); handleDeleteService(service.id); }}
+                                                        onClick={(e) => { e.stopPropagation(); setServiceToDelete(service); }}
                                                         className="px-4 py-2 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 border border-red-500/20"
                                                     >
                                                         <Trash2 size={14} /> SİL
@@ -1173,6 +1155,29 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                     )}
                 </AnimatePresence>
             </main>
+
+            <AnimatePresence>
+                {serviceToDelete && (
+                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md">
+                        <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="glass-strong p-10 rounded-[3rem] border border-red-500/30 max-w-md w-full shadow-2xl relative overflow-hidden">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 blur-3xl rounded-full" />
+                            <div className="w-20 h-20 bg-red-500/10 rounded-3xl flex items-center justify-center text-red-500 mx-auto mb-8 ring-1 ring-red-500/20 shadow-glow-red">
+                                <ShieldAlert size={40} />
+                            </div>
+                            <h3 className="text-2xl font-bold text-center mb-4 font-display">Hizmeti Sil?</h3>
+                            <p className="text-muted-foreground text-center text-sm mb-10 leading-relaxed font-body">
+                                <span className="text-foreground font-bold">"{serviceToDelete.name}"</span> isimli hizmet kalıcı olarak silinecek. Bu işlemin geri dönüşü yoktur.
+                            </p>
+                            <div className="flex flex-col gap-3">
+                                <button onClick={handleDeleteService} disabled={loading} className="w-full py-5 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-lg hover:shadow-red-500/40 disabled:opacity-50">
+                                    {loading ? "SİLİNİYOR..." : "EVET, KALICI OLARAK SİL"}
+                                </button>
+                                <button onClick={() => setServiceToDelete(null)} disabled={loading} className="w-full py-4 bg-transparent hover:bg-white/10 text-muted-foreground rounded-2xl font-bold text-[10px] uppercase tracking-widest transition-all">İPTAL ET</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
