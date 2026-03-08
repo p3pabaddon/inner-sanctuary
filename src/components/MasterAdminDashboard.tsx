@@ -338,10 +338,10 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
         }
 
         setLoading(true);
+        alert("Trace 3: Supabase bağlantısı başlıyor...");
         console.log("Trace 3: Proceeding to Supabase call");
 
         try {
-            // Trace 4: API Call
             const { error } = await supabase
                 .from('services')
                 .delete()
@@ -352,6 +352,7 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
                 alert("Veritabanı Hatası: " + error.message);
                 toast.error("Silme başarısız: " + error.message);
             } else {
+                alert("Trace 6: Silme işlemi başarılı!");
                 console.log("Trace 6: Deletion successful");
                 toast.success("Hizmet başarıyla silindi.");
                 await fetchInitialData();
