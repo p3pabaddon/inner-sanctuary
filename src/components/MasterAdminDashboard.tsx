@@ -320,36 +320,50 @@ const MasterAdminDashboard = ({ onClose }: { onClose: () => void }) => {
         setLoading(false);
     };
 
-    const handleDeleteService = async (id: any) => {
-        if (!id) {
-            toast.error("Hizmet ID'si bulunamadı.");
+    const handleDeleteService = async (serviceId: any) => {
+        // Trace 1: Function entry
+        console.log("Trace 1: handleDeleteService triggered with ID:", serviceId);
+
+        if (!serviceId) {
+            alert("Hata: Hizmet ID'si alınamadı!");
+            toast.error("ID bulunamadı.");
             return;
         }
 
-        const ok = window.confirm("Bu hizmeti kalıcı olarak silmek istediğinize emin misiniz?");
-        if (!ok) return;
+        // Trace 2: User confirmation
+        const ok = window.confirm("Bu hizmet sistemden KALICI olarak silinecektir. Devam edilsin mi? (ID: " + serviceId + ")");
+        if (!ok) {
+            console.log("Trace 2: User cancelled deletion");
+            return;
+        }
 
         setLoading(true);
-        console.log("Deleting service with ID:", id);
+        console.log("Trace 3: Proceeding to Supabase call");
 
         try {
-            const { error, count } = await supabase
+            // Trace 4: API Call
+            const { error } = await supabase
                 .from('services')
-                .delete({ count: 'exact' })
-                .eq('id', id);
+                .delete()
+                .eq('id', serviceId);
 
             if (error) {
-                console.error("Deletion error:", error);
-                toast.error("Silinemedi: " + error.message);
+                console.error("Trace 5: Supabase error", error);
+                alert("Veritabanı Hatası: " + error.message);
+                toast.error("Silme başarısız: " + error.message);
             } else {
+                console.log("Trace 6: Deletion successful");
                 toast.success("Hizmet başarıyla silindi.");
                 await fetchInitialData();
+                setIsEditingService(false);
             }
         } catch (err: any) {
-            console.error("Runtime error during deletion:", err);
-            toast.error("Sistem hatası: " + err.message);
+            console.error("Trace 7: Runtime exception", err);
+            alert("Çalışma Zamanı Hatası: " + err.message);
+            toast.error("Sistem hatası oluştu.");
         } finally {
             setLoading(false);
+            console.log("Trace 8: Operation finished");
         }
     };
 
