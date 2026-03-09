@@ -66,13 +66,13 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/assessment" element={<Assessment />} />
-              <Route path="/testimonials" element={<Testimonials />} />
-              <Route path="/compliance" element={<Compliance />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/contact" element={<Contact />} />
+              <Route path="/degerlendirme" element={<Assessment />} />
+              <Route path="/yorumlar" element={<Testimonials />} />
+              <Route path="/uyumluluk" element={<Compliance />} />
+              <Route path="/sss" element={<FAQ />} />
+              <Route path="/iletisim" element={<Contact />} />
               {/* Master Admin Route */}
-              <Route path="/master-control" element={
+              <Route path="/yonetim-paneli" element={
                 <div className="min-h-screen bg-background text-foreground">
                   <MasterAdminDashboard onClose={() => window.location.href = '/'} />
                 </div>

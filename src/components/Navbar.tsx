@@ -7,12 +7,12 @@ const navLinks = [
   { label: "Hakkımda", href: "/#about" },
   { label: "Hizmetler", href: "/#services" },
   { label: "Yöntemler", href: "/#methods" },
-  { label: "Öz-Değerlendirme", href: "/assessment" },
-  { label: "Yorumlar", href: "/testimonials" },
-  { label: "Etik & Güven", href: "/compliance" },
+  { label: "Öz-Değerlendirme", href: "/degerlendirme" },
+  { label: "Yorumlar", href: "/yorumlar" },
+  { label: "Etik & Güven", href: "/uyumluluk" },
   { label: "Makaleler", href: "/blog" },
-  { label: "SSS", href: "/faq" },
-  { label: "İletişim", href: "/contact" },
+  { label: "SSS", href: "/sss" },
+  { label: "İletişim", href: "/iletisim" },
 ];
 
 const Navbar = ({ onPortalOpen }: { onPortalOpen: () => void }) => {

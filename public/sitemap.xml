@@ -2,7 +2,37 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://codenza.com.tr/</loc>
-    <lastmod>2024-03-09</lastmod>
+    <lastmod>2026-03-09</lastmod>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://codenza.com.tr/blog</loc>
+    <lastmod>2026-03-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://codenza.com.tr/degerlendirme</loc>
+    <lastmod>2026-03-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://codenza.com.tr/yorumlar</loc>
+    <lastmod>2026-03-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://codenza.com.tr/uyumluluk</loc>
+    <lastmod>2026-03-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://codenza.com.tr/sss</loc>
+    <lastmod>2026-03-09</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://codenza.com.tr/iletisim</loc>
+    <lastmod>2026-03-09</lastmod>
+    <priority>0.8</priority>
   </url>
 </urlset>
