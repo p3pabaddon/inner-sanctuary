@@ -12,5 +12,6 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /yonetim-paneli
 
 Sitemap: https://codenza.com.tr/sitemap.xml
