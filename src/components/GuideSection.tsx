@@ -78,9 +78,9 @@ const GuideSection = () => {
                                         <div className="bg-white/20 dark:bg-black/40 p-5 rounded-[1.5rem] w-fit mb-8 group-hover:bg-white/30 dark:group-hover:bg-black/60 transition-colors">
                                             {guide.icon}
                                         </div>
-                                        <h4 className="text-2xl font-display font-black text-foreground leading-tight mb-4">
+                                        <h3 className="text-2xl font-display font-black text-foreground leading-tight mb-4">
                                             {guide.title}
-                                        </h4>
+                                        </h3>
                                         <p className="text-muted-foreground font-body text-sm">
                                             {guide.desc}
                                         </p>

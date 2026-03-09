@@ -21,8 +21,10 @@ const AboutSection = () => {
             <div className="absolute -inset-6 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-[2rem]" />
             <div className="relative overflow-hidden rounded-[2rem]">
               <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=2070&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop"
                 alt="Uzm. Kln. Psk. Ayşe Yılmaz"
+                width="800"
+                height="800"
                 className="w-full object-cover aspect-square"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary/10 to-transparent" />

@@ -87,7 +87,8 @@ const Navbar = ({ onPortalOpen }: { onPortalOpen: () => void }) => {
           </button>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="text-foreground"
+            className="text-foreground p-2"
+            aria-label={mobileOpen ? "Menüyü Kapat" : "Menüyü Aç"}
           >
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
