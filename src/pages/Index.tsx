@@ -1,19 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { useSearchParams } from "react-router-dom";
-import ScrollProgress from "@/components/ScrollProgress";
-import CursorGlow from "@/components/CursorGlow";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import AboutSection from "@/components/AboutSection";
-import ServicesSection from "@/components/ServicesSection";
-import MethodsSection from "@/components/MethodsSection";
-import BlogSection from "@/components/BlogSection";
-import GuideSection from "@/components/GuideSection";
-import AppointmentSection from "@/components/AppointmentSection";
-import Footer from "@/components/Footer";
-import AdminPanel from "@/components/AdminPanel";
-import ClientPortal from "@/components/ClientPortal";
 import { supabase } from "@/lib/supabase";
+
+// Lazy load non-critical components below the fold
+const ScrollProgress = lazy(() => import("@/components/ScrollProgress"));
+const CursorGlow = lazy(() => import("@/components/CursorGlow"));
+const AboutSection = lazy(() => import("@/components/AboutSection"));
+const ServicesSection = lazy(() => import("@/components/ServicesSection"));
+const MethodsSection = lazy(() => import("@/components/MethodsSection"));
+const BlogSection = lazy(() => import("@/components/BlogSection"));
+const GuideSection = lazy(() => import("@/components/GuideSection"));
+const AppointmentSection = lazy(() => import("@/components/AppointmentSection"));
+const Footer = lazy(() => import("@/components/Footer"));
+const AdminPanel = lazy(() => import("@/components/AdminPanel"));
+const ClientPortal = lazy(() => import("@/components/ClientPortal"));
+
+const SectionLoader = () => <div className="h-20" />;
 
 const Index = () => {
   const [isPortalOpen, setIsPortalOpen] = useState(false);
@@ -81,20 +85,25 @@ const Index = () => {
 
   return (
     <div className="relative">
-      <CursorGlow />
-      <ScrollProgress />
+      <Suspense fallback={null}>
+        <CursorGlow />
+        <ScrollProgress />
+      </Suspense>
+
       <Navbar onPortalOpen={handlePortalToggle} />
       <HeroSection />
-      <AboutSection />
-      <ServicesSection />
-      <MethodsSection />
-      <BlogSection />
-      <GuideSection />
-      <AppointmentSection />
-      <Footer />
 
-      <ClientPortal isOpen={isPortalOpen} onClose={() => setIsPortalOpen(false)} />
-      <AdminPanel isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
+      <Suspense fallback={<SectionLoader />}>
+        <AboutSection />
+        <ServicesSection />
+        <MethodsSection />
+        <BlogSection />
+        <GuideSection />
+        <AppointmentSection />
+        <Footer />
+        <ClientPortal isOpen={isPortalOpen} onClose={() => setIsPortalOpen(false)} />
+        <AdminPanel isOpen={isAdminOpen} onClose={() => setIsAdminOpen(false)} />
+      </Suspense>
     </div>
   );
 };
